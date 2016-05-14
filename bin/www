@@ -34,14 +34,12 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 
-
 var ptys = {};
 socketio(server).of('pty').on('connection', function(socket) {
 	// receives a bidirectional pipe from the client see index.html
 	// for the client-side
 	ss(socket).on('new', function(stream, options) {
 		var name = options.name;
-
 		var pty = child_pty.spawn('/bin/sh', ['-c', "echo \"Muuch Waakun Interpreter 0.0.1\"; /bin/sh"], options);
 		pty.stdout.pipe(stream).pipe(pty.stdin);
 		ptys[name] = pty;
@@ -49,6 +47,92 @@ socketio(server).of('pty').on('connection', function(socket) {
 			console.log("end");
 			pty.kill('SIGHUP');
 			delete ptys[name];
+		});
+	});
+	
+	ss(socket).on('compile', function(stream, options) {
+		
+		
+		var pty = child_pty.spawn('/bin/sh', ['-c', "echo \"$\"; /bin/sh"], options);
+		
+		//console.log(options.content);
+		
+		if(options.interpreter == "Python"){
+			fs.writeFile("/tmp/test.py", options.content, function(err) {
+				if(err) {
+					return console.log(err);
+				}
+
+				console.log("The file test.py was saved!");
+				
+			});
+			pty.stdin.write('python /tmp/test.py \n');
+		}
+
+		if(options.interpreter == "Javascript"){
+			fs.writeFile("/tmp/test.js", options.content, function(err) {
+				if(err) {
+					return console.log(err);
+				}
+
+				console.log("The file test.js was saved!");
+				
+			});
+			pty.stdin.write('node /tmp/test.js \n');
+			
+		}
+		
+		if(options.interpreter == "C"){
+			fs.writeFile("/tmp/test.c", options.content, function(err) {
+				if(err) {
+					return console.log(err);
+				}
+
+				console.log("The file test.c was saved!");
+				
+			});
+			pty.stdin.write('gcc /tmp/test.c \n');
+			pty.stdin.write('./a.out \n');
+			
+		}
+		
+		if(options.interpreter == "C++"){
+			fs.writeFile("/tmp/test.cpp", options.content, function(err) {
+				if(err) {
+					return console.log(err);
+				}
+
+				console.log("The file test.cpp was saved!");
+				
+			});
+			pty.stdin.write('g++ /tmp/test.cpp \n');
+			pty.stdin.write('./a.out \n');
+			
+		}
+		
+		if(options.interpreter == "Java"){
+			fs.writeFile("test.java", options.content, function(err) {
+				if(err) {
+					return console.log(err);
+				}
+
+				console.log("The file test.js was saved!");
+				
+			});
+			pty.stdin.write('javac test.java -Xlint\n');
+			pty.stdin.write('java test \n');
+			
+		}
+		
+		//console.log(options.command);
+		//pty.stdin.write(options.command+' \n');
+		
+		pty.stdout.pipe(stream).pipe(pty.stdin);
+		ptys[options.name] = pty;
+		socket.on('disconnect', function() {
+			console.log("end");
+			pty.kill('SIGHUP');
+			delete ptys[options.name];
 		});
 	});
 });
