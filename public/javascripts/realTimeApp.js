@@ -1,4 +1,4 @@
-var app = angular.module('realTime', ['ui.router', 'ngMaterial', 'ui.bootstrap','firebase','jsTree.directive']);
+var app = angular.module('realTime', ['ngAlertify','ui.router', 'ngMaterial', 'ui.bootstrap','firebase','jsTree.directive']);
 
 
 app.config([
@@ -521,8 +521,9 @@ app.controller('ProjectsCtrl', [
 'auth',
 'Message',
 '$firebaseArray',
-	'$http',
-function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http){
+'$http',
+'alertify',
+function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http,alertify){
 
 	$scope.iconos = [
 	{ url: 'ico-agenda'},
@@ -635,8 +636,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
         
         if($scope.nameFile==undefined)
         {
-            
-            alert('Ingresa un nombre de documento');
+            alertify.delay(5000).error("Ingresa un nombre de documento");
             return;
             
         }
@@ -655,8 +655,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
         
 		if($scope.nameFile==undefined)
         {
-            
-            alert('Ingresa un nombre de carpeta');
+            alertify.delay(5000).error("Ingresa un nombre de carpeta");
             return;
             
         }
@@ -673,12 +672,9 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
         
         else
         {
-            
-            alert('No es posible generar una carpeta a partir de un archivo');
+            alertify.delay(5000).error("No es posible generar una carpeta a partir de un archivo");
             
         }
-		
-		
 		
 	}
 	
@@ -746,22 +742,131 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	
 	$scope.user = auth.currentPayload();
     $scope.messages= Message.all;
-	
-    var foo = document.getElementById('foo');
-    //var foo = document.getElementById('foo');
-    foo.scrollTop = foo.scrollHeight;
+
     
-    //console.log($scope.user.username);
+   /* var obj = $firebaseObject(ref);
+    var unwatch = obj.$watch(function() {
+      console.log("data changed!");
+    });*/
     
+   
+    
+	if($scope.user)
+		$scope.user.colaboradorIndependiente = $scope.user.nombreInstitucion == 'Colaborador Independiente';
+    
+	var colaboradores = [];
 	
-    $scope.goBot = function()
-    {
-        
-        console.log("on load");
-        var foo = document.getElementById('foo');
-        foo.scrollTop = foo.scrollHeight;
-        
+	if($scope.project){
+		$scope._id = $stateParams.id;
+		$scope.nombre = $scope.project.nombre;
+		$scope.descripcion = $scope.project.descripcion;
+		$scope.icono = $scope.project.icono;
+		$scope.privado = $scope.project.privado + "";
+		$scope.colaboradores =  $scope.project.colaboradores;
+		
+		for(i=0; i< $scope.project.colaboradores.length; i++){
+			for(j=0; j< $scope.users.length; j++){
+				if($scope.project.colaboradores[i] == $scope.users[j]._id)
+					colaboradores.push($scope.users[j]);
+			}
+		}
+	}
+	
+	
+	var cachedQuery, lastSearch, pendingSearch, cancelSearch = angular.noop;
+	
+	$scope.loadContacts = function(){
+		return $scope.users;
+		
+		return [
+			{image: 'Avatar1', name: 'jose', email: 'jose@gmail.com'},
+			{image: 'Avatar2', name: 'antonio', email: 'antonio@gmail.com'},
+			{image: 'Avatar3', name: 'juan', email: 'juan@gmail.com'},
+			{image: 'Avatar4', name: 'pedro', email: 'pedro@gmail.com'},
+			{image: 'Avatar5', name: 'miguel', email: 'miguel@gmail.com'},
+			{image: 'Avatar6', name: 'jesus', email: 'jesus@gmail.com'}];
+	}
+	
+	
+	$scope.allContacts = $scope.loadContacts();
+	$scope.contacts = colaboradores;
+	$scope.filterSelected = false;
+	
+	$scope.querySearch = function(criteria){
+		cachedQuery = criteria;
+      return cachedQuery ? $scope.allContacts.filter(createFilterFor(cachedQuery)) : [];
+	}
+	function createFilterFor(query) {
+      var lowercaseQuery = angular.lowercase(query);
+
+      return function filterFn(contact) {
+        return (contact.username.toLowerCase().indexOf(lowercaseQuery) != -1);
+      };
+
     }
+	
+	$scope.getUsers = function(){
+		projects.getUsers();
+	}
+	
+	
+	$scope.addProject = function(){
+		  if(!$scope.nombre || $scope.nombre === '' ||
+			 !$scope.descripcion ||
+			 !$scope.icono) { 
+				$scope.error =
+					new Object({message:"Por favor llene todos los campos"});
+					return; 
+		  }
+		  project = {
+			nombre: $scope.nombre,
+			descripcion: $scope.descripcion,
+			icono: $scope.icono,
+			privado: $scope.privado,
+			colaboradores: $scope.colaboradores
+		  };
+		  if($scope._id) 
+			  project._id = $scope._id;
+		  else {
+			  project._id = null;
+			  project.colaboradores = [auth.currentId()];
+		  }
+			  
+	  
+		  projects.create(project).error(function(error){
+			$scope.error = error;
+			if(!$scope.error.message)
+				if($scope.error.indexOf("duplicate key") != -1)
+					$scope.error =
+						new Object({message:"El nombre del proyecto ya esta registrado, favor de intentar con otro nombre de proyecto."});
+			
+			}).then(function(){
+				debugger;
+				if(project._id){
+					$state.go('proyectos');
+				}
+				else{
+					var idProyectoActual = projects.projects[projects.projects.length-1]._id;
+					var usuarioLogueado= auth.currentPayload();
+					if(!usuarioLogueado.proyectos)
+						usuarioLogueado.proyectos = [];
+					usuarioLogueado.proyectos.push(idProyectoActual);
+					auth.updateUserProjects(usuarioLogueado)
+							.error(function(error){
+								$scope.error = error;
+								
+							}).then(function(){
+								debugger;
+								$state.go('proyectos');
+								
+							});
+				}
+			});;
+		  $scope.nombre = '';
+		  $scope.descripcion = '';
+		  $scope._id = null;
+	};
+
     
 	$scope.send = function(newmessage)
     {
@@ -775,14 +880,17 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
         newmessage.iduser = $scope.user._id;
         Message.create(newmessage);
         newmessage.text = null;
-        /*
-        var last = document.getElementById("list").lastElementChild.innerHTML;
-        console.log("last: ",last);
-        //last.scrollIntoView(true);
-        //last.scrollIntoView(true);
-        last.slice();
-        //console.log(list);*/
+        
 	};
+    
+    $scope.change = function()
+    {
+        
+        console.log("cambio");
+        var objDiv = document.getElementById("foo");
+        objDiv.scrollTop = objDiv.scrollHeight;
+        
+    }
 	
 }]);
 
@@ -932,18 +1040,25 @@ app.factory('auth', ['$http', '$window', function($http, $window){
   return auth;
 }])
 
-app.factory('Message', ['$firebaseArray',
-	function($firebaseArray) {
-		var ref = new Firebase('https://incandescent-inferno-2649.firebaseio.com');
+app.factory('Message', ['$firebaseArray','$stateParams',
+	function($firebaseArray,$stateParams) {
+		var ref = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id+'/messages');
 		var messages = $firebaseArray(ref);
-
+        
+        var unwatch = messages.$watch(function() {
+        
+            console.log("data changed!");
+            var objDiv = document.getElementById("foo");
+            objDiv.scrollTop = objDiv.scrollHeight;
+        
+        });
+        
 		var Message = {
 			all: messages,
 			create: function (message) {
 				return messages.$add(message);
 			},
 			get: function (messageId) {
-                
                 console.log("llega");
 				return $firebaseObject(ref.child('messages').child(messageId));
 			},
