@@ -7,6 +7,10 @@
 var app = require('../app');
 var debug = require('debug')('real-time:server');
 var http = require('http');
+var	fs = require('fs'),
+    socketio = require('socket.io'),
+    child_pty = require('child_pty'),
+    ss = require('socket.io-stream');
 
 /**
  * Get port from environment and store in Express.
@@ -28,6 +32,35 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+
+
+var ptys = {};
+socketio(server).of('pty').on('connection', function(socket) {
+	// receives a bidirectional pipe from the client see index.html
+	// for the client-side
+	ss(socket).on('new', function(stream, options) {
+		var name = options.name;
+
+		var pty = child_pty.spawn('/bin/sh', ['-c', "echo \"Please don't use this in productive environments as all keystrokes are sent in plain text!\"; /bin/sh"], options);
+		pty.stdout.pipe(stream).pipe(pty.stdin);
+		ptys[name] = pty;
+		socket.on('disconnect', function() {
+			console.log("end");
+			pty.kill('SIGHUP');
+			delete ptys[name];
+		});
+	});
+});
+
+process.on('exit', function() {
+	var k = Object.keys(ptys);
+	var i;
+
+	for(i = 0; i < k.length; i++) {
+		ptys[k].kill('SIGHUP');
+	}
+});
 
 /**
  * Normalize a port into a number, string, or false.

@@ -133,3 +133,10 @@ a.powered-by-firepad {
     width: 80%;
     
 }
+
+.terminaljs {
+	background: black;
+	color: white;
+	font-family: Courier, monospace;
+	display:inline-block;
+}
