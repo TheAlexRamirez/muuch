@@ -255,13 +255,23 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 		   console.log(fireProject);
 			$scope.treeModel = [];
 			for(var i=0,j=0; i < fireProject.length; i++){
-				if(fireProject[i].type){
+				if(fireProject[i].type == "file"){
 					$scope.treeModel[j] = {};
 					$scope.treeModel[j].text = fireProject[i].name;
 					$scope.treeModel[j].id = fireProject[i].$id;
 					$scope.treeModel[j].parent = fireProject[i].parent;
 					$scope.treeModel[j].type = fireProject[i].type;
+					$scope.treeModel[j].icon = "/images/file.png";
 					
+
+					j++;
+				} else if(fireProject[i].type == "directory"){
+					$scope.treeModel[j] = {};
+					$scope.treeModel[j].text = fireProject[i].name;
+					$scope.treeModel[j].id = fireProject[i].$id;
+					$scope.treeModel[j].parent = fireProject[i].parent;
+					$scope.treeModel[j].type = fireProject[i].type;
+					$scope.treeModel[j].icon = "/images/folder.jpg";					
 
 					j++;
 				}
