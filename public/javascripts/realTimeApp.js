@@ -1,10 +1,10 @@
-var app = angular.module('realTime', ['ui.router', 'ngMaterial', 'ui.bootstrap','firebase','jsTree.directive'])
+var app = angular.module('realTime', ['ui.router', 'ngMaterial', 'ui.bootstrap','firebase','jsTree.directive']);
 
 
 app.config([
 '$stateProvider',
 '$urlRouterProvider',
-function($stateProvider, $urlRouterProvider,firebase) {
+function($stateProvider, $urlRouterProvider) {
 	$stateProvider
 		.state('detalle-proyecto', {
 		  url: '/detalle-proyecto/{id}',
@@ -650,10 +650,10 @@ app.factory('auth', ['$http', '$window', function($http, $window){
   return auth;
 }])
 
-app.factory('Message', ['$firebase',
-	function($firebase) {
+app.factory('Message', ['$firebaseArray',
+	function($firebaseArray) {
 		var ref = new Firebase('https://incandescent-inferno-2649.firebaseio.com');
-		var messages = $firebase(ref.child('messages')).$asArray();
+		var messages = $firebaseArray(ref);
 
 		var Message = {
 			all: messages,
@@ -661,7 +661,7 @@ app.factory('Message', ['$firebase',
 				return messages.$add(message);
 			},
 			get: function (messageId) {
-				return $firebase(ref.child('messages').child(messageId)).$asObject();
+				return $firebaseObject(ref.child('messages').child(messageId));
 			},
 			delete: function (message) {
 				return messages.$remove(message);
