@@ -508,13 +508,13 @@
 								Colaboradores
 							</div>
 
-                    <div class="panel-body minH4">
+                    <div class="panel-body minH4" ng-init="goBot()">
                     
-							<div class="minH5" style="overflow: scroll;overflow-x: hidden; width:100%">
+							<div id="foo" class="minH5" style="overflow: scroll;overflow-x: hidden; width:100%">
                              
                     <div ng-repeat="message in messages" >
                              
-                                <ul class="chat">
+                                <ul id="list" class="chat">
                                 
                         <li ng-if="message.user==user.username" >
                         
@@ -544,7 +544,7 @@
 							</div>
 
 							</div>
-                            <form id="chatForm" ng-submit="send(newmessage)" class="">
+                            <form style="margin-top:10px" id="chatForm" ng-submit="send(newmessage)" class="">
                                 <div class="col-lg-15">
                                     <div class="input-group">
                                       <input type="text" class="form-control" ng-model="newmessage.text">

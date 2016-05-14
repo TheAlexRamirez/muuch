@@ -336,7 +336,15 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 
 	//Adding a new File
 	$scope.addDocument= function(){
-		console.log($scope.nameFile);
+        
+        if($scope.nameFile==undefined)
+        {
+            
+            alert('Ingresa un nombre de documento');
+            return;
+            
+        }
+        
 		$scope.fireProject.$add({
 			name : $scope.nameFile,
 			type : "file",
@@ -348,7 +356,14 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 
 	//Adding a new Directory
 	$scope.addDirectory= function(){
-		//console.log($scope.nameFile);
+        
+		if($scope.nameFile==undefined)
+        {
+            
+            alert('Ingresa un nombre de carpeta');
+            return;
+            
+        }
 		
 		if(!$scope.preventNewDirectory){
 			$scope.fireProject.$add({
@@ -359,6 +374,13 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 			$scope.nameFile = "";
 			$scope.updateTree();
 		}
+        
+        else
+        {
+            
+            alert('No es posible generar una carpeta a partir de un archivo');
+            
+        }
 		
 		
 		
@@ -432,6 +454,9 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	
 	$scope.user = auth.currentPayload();
     $scope.messages= Message.all;
+    var foo = document.getElementById('foo');
+    //var foo = document.getElementById('foo');
+    foo.scrollTop = foo.scrollHeight;
     
     console.log($scope.user.username);
     
@@ -551,25 +576,34 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 		  $scope._id = null;
 	};
 	
+    $scope.goBot = function()
+    {
+        
+        console.log("on load");
+        var foo = document.getElementById('foo');
+        foo.scrollTop = foo.scrollHeight;
+        
+    }
+    
 	$scope.send = function(newmessage)
     {
-		console.log(newmessage);
         if(newmessage.text==null||newmessage==undefined)
             {
-                console.log("vacio");
                 alert("Escribe algo tonto");
                 return;
             }
         
         newmessage.user = $scope.user.username;
         newmessage.iduser = $scope.user._id;
-        console.log(newmessage);
-        console.log("entra crear");
         Message.create(newmessage);
         newmessage.text = null;
-        
-        var form = document.getElementById("chatForm");
-        form.reset();
+        /*
+        var last = document.getElementById("list").lastElementChild.innerHTML;
+        console.log("last: ",last);
+        //last.scrollIntoView(true);
+        //last.scrollIntoView(true);
+        last.slice();
+        //console.log(list);*/
 	};
 	
 }]);
@@ -731,6 +765,8 @@ app.factory('Message', ['$firebaseArray',
 				return messages.$add(message);
 			},
 			get: function (messageId) {
+                
+                console.log("llega");
 				return $firebaseObject(ref.child('messages').child(messageId));
 			},
 			delete: function (message) {
