@@ -9,7 +9,7 @@ function($stateProvider, $urlRouterProvider) {
 		.state('detalle-proyecto', {
 		  url: '/detalle-proyecto/{id}',
 		  templateUrl: '/detalle-proyecto.html',
-		  controller: 'ProjectsCtrl',
+		  controller: 'detailProjectCtrl',
 		  resolve: {
 			post: ['$stateParams', 'projects', function($stateParams, projects) {
 				return projects.getProject($stateParams.id);
@@ -21,7 +21,7 @@ function($stateProvider, $urlRouterProvider) {
 		.state('usuario', {
 		  url: '/usuario/{id}',
 		  templateUrl: '/usuario.html',
-		  controller: 'ProjectsCtrl',
+		  controller: 'UserCtrl',
 		  resolve: {
 			post: ['$stateParams', 'projects', function($stateParams, projects) {
 				return projects.getUser($stateParams.id);
@@ -33,9 +33,9 @@ function($stateProvider, $urlRouterProvider) {
 		.state('usuarios', {
 		  url: '/usuarios',
 		  templateUrl: '/usuarios.html',
-		  controller: 'ProjectsCtrl',
+		  controller: 'UsersCtrl',
 		  resolve: {
-			post: ['$stateParams', 'projects', function($stateParams, projects) {
+			users: ['$stateParams', 'projects', function($stateParams, projects) {
 				if(projects.users.length==0)
 					return projects.getUsers();
 			}]
@@ -73,14 +73,14 @@ function($stateProvider, $urlRouterProvider) {
 		.state('agregar-proyectos', {
 		  url: '/agregar-proyectos',
 		  templateUrl: '/agregar-proyectos.html',
-		  controller: 'ProjectsCtrl'
+		  controller: 'addProjectCtrl'
 		});
 		
 	$stateProvider
 		.state('editar-proyectos', {
 		  url: '/agregar-proyectos/{id}',
 		  templateUrl: '/agregar-proyectos.html',
-		  controller: 'ProjectsCtrl',
+		  controller: 'editProjectCtrl',
 		  resolve: {
 			//if($stateParams.id != null)
 			post: ['$stateParams', 'projects', function($stateParams, projects) {
@@ -148,6 +148,306 @@ function($stateProvider, $urlRouterProvider) {
 	});
 	
   //$urlRouterProvider.otherwise('home');
+}]);
+
+
+//Controller for projectDetails/{:id}
+app.controller('detailProjectCtrl', [
+'post',
+'$scope',
+'$stateParams',
+'projects',
+'$state',
+'auth',
+'Message',
+'$firebaseArray',
+'$http',
+function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http){
+	$scope.projectF = post;
+}]);
+
+
+//Controller for user/{:id}
+app.controller('UserCtrl', [
+'post',
+'$scope',
+'$stateParams',
+'projects',
+'$state',
+'auth',
+'Message',
+'$firebaseArray',
+'$http',
+function(post,$scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http){
+	$scope.user = post;
+	
+}]);
+
+//Controller for /users
+app.controller('UsersCtrl', [
+
+'users',
+'$scope',
+'$stateParams',
+'projects',
+'$state',
+'auth',
+'Message',
+'$firebaseArray',
+'$http',
+function(users,$scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http){
+	
+	
+	projects.getUsers();
+	//console.log(projects.users);
+	$scope.contacts = projects.users;
+	
+	
+	var cachedQuery, lastSearch, pendingSearch, cancelSearch = angular.noop;
+	
+	$scope.loadContacts = function(){
+		return $scope.contacts;
+	}
+	
+	var colaboradores = [];
+	
+	if($scope.project){
+		$scope._id = $stateParams.id;
+		$scope.nombre = $scope.project.nombre;
+		$scope.descripcion = $scope.project.descripcion;
+		$scope.icono = $scope.project.icono;
+		$scope.privado = $scope.project.privado + "";
+		$scope.colaboradores =  $scope.project.colaboradores;
+		
+		for(i=0; i< $scope.project.colaboradores.length; i++){
+			for(j=0; j< $scope.users.length; j++){
+				if($scope.project.colaboradores[i] == $scope.users[j]._id)
+					colaboradores.push($scope.users[j]);
+			}
+		}
+	}
+	
+	$scope.allContacts = $scope.loadContacts();
+	$scope.contacts = colaboradores;
+	
+	$scope.filterSelected = false;
+	$scope.querySearch = function(criteria){
+		cachedQuery = criteria;
+      return cachedQuery ? $scope.allContacts.filter(createFilterFor(cachedQuery)) : [];
+	}
+	
+	function createFilterFor(query) {
+      var lowercaseQuery = angular.lowercase(query);
+
+      return function filterFn(contact) {
+        return (contact.username.toLowerCase().indexOf(lowercaseQuery) != -1);
+      };
+
+    }
+	
+	if($scope.user)
+		$scope.user.colaboradorIndependiente = $scope.user.nombreInstitucion == 'Colaborador Independiente';
+    
+	
+	
+	$scope.getUsers = function(){
+		projects.getUsers();
+	}
+	
+}]);
+
+
+//Controller for agregarproyecto
+app.controller('addProjectCtrl', [
+
+'$scope',
+'$stateParams',
+'projects',
+'$state',
+'auth',
+'Message',
+'$firebaseArray',
+'$http',
+function($scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http){
+	$scope.iconos = [
+	{ url: 'ico-agenda'},
+	{ url: 'ico-blackboard'},
+	{ url: 'ico-blackboard-eraser'},
+	{ url: 'ico-book'},
+	{ url: 'ico-briefcase'},
+	{ url: 'ico-calendar'},
+	{ url: 'ico-computer'},
+	{ url: 'ico-ebook'},
+	{ url: 'ico-file'},
+	{ url: 'ico-folder'}];
+	
+	$scope.addProject = function(){
+		  if(!$scope.nombre || $scope.nombre === '' ||
+			 !$scope.descripcion ||
+			 !$scope.icono) { 
+				$scope.error =
+					new Object({message:"Por favor llene todos los campos"});
+					return; 
+		  }
+		  project = {
+			nombre: $scope.nombre,
+			descripcion: $scope.descripcion,
+			icono: $scope.icono,
+			privado: $scope.privado,
+			colaboradores: $scope.colaboradores
+		  };
+		  if($scope._id) 
+			  project._id = $scope._id;
+		  else {
+			  project._id = null;
+			  project.colaboradores = [auth.currentId()];
+		  }
+		
+		
+			  
+	  
+		  projects.create(project).error(function(error){
+			$scope.error = error;
+			if(!$scope.error.message)
+				if($scope.error.indexOf("duplicate key") != -1)
+					$scope.error =
+						new Object({message:"El nombre del proyecto ya esta registrado, favor de intentar con otro nombre de proyecto."});
+			
+			}).then(function(){
+				debugger;
+				if(project._id){
+					$state.go('proyectos');
+				}
+				else{
+					var idProyectoActual = projects.projects[projects.projects.length-1]._id;
+					var usuarioLogueado= auth.currentPayload();
+					if(!usuarioLogueado.proyectos)
+						usuarioLogueado.proyectos = [];
+					usuarioLogueado.proyectos.push(idProyectoActual);
+					auth.updateUserProjects(usuarioLogueado)
+							.error(function(error){
+								$scope.error = error;
+								
+							}).then(function(){
+								debugger;
+								$state.go('proyectos');
+								
+							});
+				}
+			});;
+		  $scope.nombre = '';
+		  $scope.descripcion = '';
+		  $scope._id = null;
+	};
+	
+	
+}]);
+
+
+//Controller for agregarproyecto/:id
+app.controller('editProjectCtrl', [
+'post',
+'$scope',
+'$stateParams',
+'projects',
+'$state',
+'auth',
+'Message',
+'$firebaseArray',
+'$http',
+function(post,$scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http){
+	
+	$scope.iconos = [
+	{ url: 'ico-agenda'},
+	{ url: 'ico-blackboard'},
+	{ url: 'ico-blackboard-eraser'},
+	{ url: 'ico-book'},
+	{ url: 'ico-briefcase'},
+	{ url: 'ico-calendar'},
+	{ url: 'ico-computer'},
+	{ url: 'ico-ebook'},
+	{ url: 'ico-file'},
+	{ url: 'ico-folder'}];
+	
+	$scope.project = post;
+	$scope.users = projects.users;
+	
+	if($scope.project){
+		$scope._id = $stateParams.id;
+		$scope.nombre = $scope.project.nombre;
+		$scope.descripcion = $scope.project.descripcion;
+		$scope.icono = $scope.project.icono;
+		$scope.privado = $scope.project.privado + "";
+		$scope.colaboradores =  $scope.project.colaboradores;
+		for(i=0; i< $scope.project.colaboradores.length; i++){
+			for(j=0; j< $scope.users.length; j++){
+				if($scope.project.colaboradores[i] == $scope.users[j]._id)
+					colaboradores.push($scope.users[j]);
+			}
+		}
+	}
+
+	
+	$scope.addProject = function(){
+		  if(!$scope.nombre || $scope.nombre === '' ||
+			 !$scope.descripcion ||
+			 !$scope.icono) { 
+				$scope.error =
+					new Object({message:"Por favor llene todos los campos"});
+					return; 
+		  }
+		  project = {
+			nombre: $scope.nombre,
+			descripcion: $scope.descripcion,
+			icono: $scope.icono,
+			privado: $scope.privado,
+			colaboradores: $scope.colaboradores
+		  };
+		  if($scope._id) 
+			  project._id = $scope._id;
+		  else {
+			  project._id = null;
+			  project.colaboradores = [auth.currentId()];
+		  }
+		
+		
+			  
+	  
+		  projects.create(project).error(function(error){
+			$scope.error = error;
+			if(!$scope.error.message)
+				if($scope.error.indexOf("duplicate key") != -1)
+					$scope.error =
+						new Object({message:"El nombre del proyecto ya esta registrado, favor de intentar con otro nombre de proyecto."});
+			
+			}).then(function(){
+				debugger;
+				if(project._id){
+					$state.go('proyectos');
+				}
+				else{
+					var idProyectoActual = projects.projects[projects.projects.length-1]._id;
+					var usuarioLogueado= auth.currentPayload();
+					if(!usuarioLogueado.proyectos)
+						usuarioLogueado.proyectos = [];
+					usuarioLogueado.proyectos.push(idProyectoActual);
+					auth.updateUserProjects(usuarioLogueado)
+							.error(function(error){
+								$scope.error = error;
+								
+							}).then(function(){
+								debugger;
+								$state.go('proyectos');
+								
+							});
+				}
+			});;
+		  $scope.nombre = '';
+		  $scope.descripcion = '';
+		  $scope._id = null;
+	};
+	
+	
 }]);
 
 
@@ -236,11 +536,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	{ url: 'ico-file'},
 	{ url: 'ico-folder'}];
 	
-	//console.log(post);
-	/*post.$promise.then(function(data){
-		console.log("project ",data);
-	});*/
-	
+	console.log(post);
 	$scope.project = post;
 	console.log($scope.project);
 	
@@ -448,133 +744,15 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	}
 
 	
-	$scope.users = projects.users;
-	
-	$scope.projectF = projects.project;
-	
 	$scope.user = auth.currentPayload();
     $scope.messages= Message.all;
+	
     var foo = document.getElementById('foo');
     //var foo = document.getElementById('foo');
     foo.scrollTop = foo.scrollHeight;
     
-    console.log($scope.user.username);
+    //console.log($scope.user.username);
     
-	if($scope.user)
-		$scope.user.colaboradorIndependiente = $scope.user.nombreInstitucion == 'Colaborador Independiente';
-    
-	var colaboradores = [];
-	
-	if($scope.project){
-		$scope._id = $stateParams.id;
-		$scope.nombre = $scope.project.nombre;
-		$scope.descripcion = $scope.project.descripcion;
-		$scope.icono = $scope.project.icono;
-		$scope.privado = $scope.project.privado + "";
-		$scope.colaboradores =  $scope.project.colaboradores;
-		
-		for(i=0; i< $scope.project.colaboradores.length; i++){
-			for(j=0; j< $scope.users.length; j++){
-				if($scope.project.colaboradores[i] == $scope.users[j]._id)
-					colaboradores.push($scope.users[j]);
-			}
-		}
-	}
-	
-	
-	var cachedQuery, lastSearch, pendingSearch, cancelSearch = angular.noop;
-	
-	$scope.loadContacts = function(){
-		return $scope.users;
-		
-		return [
-			{image: 'Avatar1', name: 'jose', email: 'jose@gmail.com'},
-			{image: 'Avatar2', name: 'antonio', email: 'antonio@gmail.com'},
-			{image: 'Avatar3', name: 'juan', email: 'juan@gmail.com'},
-			{image: 'Avatar4', name: 'pedro', email: 'pedro@gmail.com'},
-			{image: 'Avatar5', name: 'miguel', email: 'miguel@gmail.com'},
-			{image: 'Avatar6', name: 'jesus', email: 'jesus@gmail.com'}];
-	}
-	
-	
-	$scope.allContacts = $scope.loadContacts();
-	$scope.contacts = colaboradores;
-	$scope.filterSelected = false;
-	
-	$scope.querySearch = function(criteria){
-		cachedQuery = criteria;
-      return cachedQuery ? $scope.allContacts.filter(createFilterFor(cachedQuery)) : [];
-	}
-	function createFilterFor(query) {
-      var lowercaseQuery = angular.lowercase(query);
-
-      return function filterFn(contact) {
-        return (contact.username.toLowerCase().indexOf(lowercaseQuery) != -1);
-      };
-
-    }
-	
-	$scope.getUsers = function(){
-		projects.getUsers();
-	}
-	
-	
-	$scope.addProject = function(){
-		  if(!$scope.nombre || $scope.nombre === '' ||
-			 !$scope.descripcion ||
-			 !$scope.icono) { 
-				$scope.error =
-					new Object({message:"Por favor llene todos los campos"});
-					return; 
-		  }
-		  project = {
-			nombre: $scope.nombre,
-			descripcion: $scope.descripcion,
-			icono: $scope.icono,
-			privado: $scope.privado,
-			colaboradores: $scope.colaboradores
-		  };
-		  if($scope._id) 
-			  project._id = $scope._id;
-		  else {
-			  project._id = null;
-			  project.colaboradores = [auth.currentId()];
-		  }
-			  
-	  
-		  projects.create(project).error(function(error){
-			$scope.error = error;
-			if(!$scope.error.message)
-				if($scope.error.indexOf("duplicate key") != -1)
-					$scope.error =
-						new Object({message:"El nombre del proyecto ya esta registrado, favor de intentar con otro nombre de proyecto."});
-			
-			}).then(function(){
-				debugger;
-				if(project._id){
-					$state.go('proyectos');
-				}
-				else{
-					var idProyectoActual = projects.projects[projects.projects.length-1]._id;
-					var usuarioLogueado= auth.currentPayload();
-					if(!usuarioLogueado.proyectos)
-						usuarioLogueado.proyectos = [];
-					usuarioLogueado.proyectos.push(idProyectoActual);
-					auth.updateUserProjects(usuarioLogueado)
-							.error(function(error){
-								$scope.error = error;
-								
-							}).then(function(){
-								debugger;
-								$state.go('proyectos');
-								
-							});
-				}
-			});;
-		  $scope.nombre = '';
-		  $scope.descripcion = '';
-		  $scope._id = null;
-	};
 	
     $scope.goBot = function()
     {
@@ -845,7 +1023,7 @@ app.factory('projects', ['$http', 'auth', function($http, auth){
 		  //angular.copy(data, o.users);
 			for(i=0;i<o.users.length;i++){
 				o.users[i].iconoAvatar = 
-					"../images/" + o.users[i].iconoAvatar  +".png";
+					"../images/" + o.users[i].iconoAvatar +".png";
 			}
 		  
 		});
