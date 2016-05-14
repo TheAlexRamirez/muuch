@@ -117,7 +117,6 @@
 			
 <!-- AngularFire -->
 <script src="https://cdn.firebase.com/libs/angularfire/1.2.0/angularfire.min.js"></script>
-
 			
 	<!--Angular Tree -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
@@ -130,7 +129,7 @@
 <script src="socket.io/socket.io.js"></script>
 <script src="javascripts/socket.io-stream.js"></script>
 <script src="javascripts/terminal.js"></script>
-<script src="javascripts/webterm.js"></script>
+
 
 			
   <!-- Custom Scripts -->
@@ -428,12 +427,29 @@
 	<div class="container col-md-12">
 		<div class="panel panel-default ">
 			<div class="panel-heading">
-				<h3>
-				  <span>
-					Nombre: {{nombre}}
-				  </span>
-					
-				</h3>
+				
+				<div class="container-fluid">
+					<div class="row">
+							<div class=".col-md-6">
+								  <h2 class="h2" >{{project.nombre}} <small>{{project.descripcion}}</small></h2>
+							</div>
+
+						  <div class=".col-md-6" >
+							  <button class="btn btn-success .col-md-6" ng-click="addToTerminal()"><span class="glyphicon glyphicon-play" aria-hidden="true"></span>  Run</button>
+							  <select class="form-control .col-md-6"  id="sel1" ng-model="langTarget">
+								<option>Java</option>
+								<option>C</option>
+								<option>Javascript</option>
+								<option>C++</option>
+								<option>Python</option>
+							  </select>
+						 </div>
+
+					</div>
+				</div>
+				
+				
+				
 			</div>
 			<div class="panel-body">
 				<div class="row">
@@ -442,29 +458,6 @@
 						<div class="panel panel-default">
 						
 							<div class="panel-heading">
-                            <!--
-                            <div class="col-lg-15">
-                                    <div class="input-group">
-                                      <input type="text" class="form-control" ng-model="newmessage.text">
-                                      <span class="input-group-btn">
-                                        <button class="btn btn-success" ng-click="addDocument()">
-                                            <span class="glyphicon glyphicon-file" aria-hidden="true">
-                                        </button>
-                                      </span>
-                                    </div>
-                                </div>-->
-                            <!--    
-                            <div class="col-lg-15">
-                                    <div class="input-group">
-                                      <input type="text" class="form-control" ng-model="newmessage.text">
-                                      <span class="input-group-btn">
-                                        <button class="btn btn-success" ng-click="addDirectory()">
-                                            <span class="glyphicon glyphicon-folder-close" aria-hidden="true">
-                                        </button>
-                                      </span>
-                                    </div>
-                                </div>-->
-                            
                             
 								<!--Directorio-->
 								<button class="btn btn-primary" ng-click="addDocument()">
@@ -501,7 +494,7 @@
 								
 								<div class="panel-body minH3">
 									
-									<pre class="terminaljs" data-columns="93" data-rows="5"></pre>
+									<pre class="terminaljs" data-columns="93" data-rows="7" data-name="t1"></pre>
 									
 								</div>
 							</div>
@@ -514,6 +507,7 @@
 							<div class="panel-heading">
 								Colaboradores
 							</div>
+
                     <div class="panel-body minH4">
                     
 							<div class="minH5" style="overflow: scroll;overflow-x: hidden; width:100%">
@@ -538,24 +532,9 @@
                                 <div class="header">
                                     <strong >{{message.user}}</strong>
                                 </div>
-                                
-                                <p>
-                                {{message.text}}.
-                                </p>
-                            </div>
-                        </li>
-                        
-                            </div>
-                    </ul>
-                                
-                                
                             </div>
 							<div>
-							
                             <form id="chatForm" ng-submit="send(newmessage)" class="">
-                            
-                                
-                                
                                 <div class="col-lg-15">
                                     <div class="input-group">
                                       <input type="text" class="form-control" ng-model="newmessage.text">
@@ -564,8 +543,6 @@
                                       </span>
                                     </div><!-- /input-group -->
                                 </div><!-- /.col-lg-6 -->
-                                
-                                
 							</form>
 							
 							</div>

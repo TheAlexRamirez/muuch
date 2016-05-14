@@ -3,8 +3,6 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-
-
 .contact-item.selected .ng-binding{
 	color: red;
 }
@@ -120,11 +118,16 @@ a.powered-by-firepad {
     display: none;
 }
 
-.mess-user
+#send-bttn
 {
-   text-align: right;
-height:auto;
     
+    width:30px;
+    height:30px;
+    border: 0; 
+    border-radius: 20px;
+    background-image: url(../images/send_icon.png);
+    background-repeat: no-repeat;
+    background-size:cover
 }
 
 .mess-colab
@@ -172,4 +175,5 @@ height:auto;
 	color: white;
 	font-family: Courier, monospace;
 	display:inline-block;
+	overflow: scroll;
 }
