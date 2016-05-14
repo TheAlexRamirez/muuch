@@ -597,13 +597,9 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
         newmessage.iduser = $scope.user._id;
         Message.create(newmessage);
         newmessage.text = null;
-        /*
-        var last = document.getElementById("list").lastElementChild.innerHTML;
-        console.log("last: ",last);
-        //last.scrollIntoView(true);
-        //last.scrollIntoView(true);
-        last.slice();
-        //console.log(list);*/
+        
+        var objDiv = document.getElementById("foo");
+        objDiv.scrollTop = objDiv.scrollHeight;
 	};
 	
 }]);
@@ -754,9 +750,9 @@ app.factory('auth', ['$http', '$window', function($http, $window){
   return auth;
 }])
 
-app.factory('Message', ['$firebaseArray',
-	function($firebaseArray) {
-		var ref = new Firebase('https://incandescent-inferno-2649.firebaseio.com');
+app.factory('Message', ['$firebaseArray','$stateParams'
+	function($firebaseArray,$stateParams) {
+		var ref = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id+'/messages');
 		var messages = $firebaseArray(ref);
 
 		var Message = {
@@ -765,7 +761,6 @@ app.factory('Message', ['$firebaseArray',
 				return messages.$add(message);
 			},
 			get: function (messageId) {
-                
                 console.log("llega");
 				return $firebaseObject(ref.child('messages').child(messageId));
 			},
