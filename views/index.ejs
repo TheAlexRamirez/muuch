@@ -471,23 +471,49 @@ glyphicon glyphicon-file" aria-hidden="true"></span></button><button class="btn 
 						<div class="panel panel-default panel-success">
 						
 							<div class="panel-heading">
-								Colaboradoresd
+								Colaboradores
 							</div>
-							<div style="height: 300px; overflow: scroll;overflow-x: hidden;">
-                                <div  ng-repeat="message in messages" >
-                                    <div class="message mess-colab" ng-if="message.user!=user.username">
-                                        {{message.user}}: {{message.text}}
-                                    </div>
-                                    <div class="message mess-user" style="text-align:right"ng-if="message.user==user.username">
-                                        {{message.text}}
-                                    </div>
+							<div style="height: 300px; overflow: scroll;overflow-x: hidden; width:100%">
+                             
+                             <div ng-repeat="message in messages" >
+                             
+                                <ul class="chat">
+                                
+                        <li ng-if="message.user==user.username" >
+                        
+                            <div class="chat-body clearfix mess-user">
+
+                                <p>
+                                    {{message.text}}.
+                                </p>
+
+                            </div>
+                        </li>
+                        
+                        <li ng-if="message.user!=user.username" >
+                            <div class="chat-body clearfix mess-colab">
+                                <div class="header">
+                                    <strong >{{message.user}}</strong>
                                 </div>
+                                
+                                <p>
+                                {{message.text}}.
+                                </p>
+                            </div>
+                        </li>
+                        
+                            </div>
+                    </ul>
+                                
+                                
                             </div>
 							<div>
 							<form id="chatForm" ng-submit="send(newmessage)" class="">
 								
-                                <input style="width:70%"required title="Escribe un mensaje" type="text" ng-model="newmessage.text"></input>
-								<button id="send-bttn" type="submit"></button>
+                                <input id="txt" style="width:70%"required title="Escribe un mensaje" type="text" ng-model="newmessage.text"></input>
+								<button class="btn btn-success" type="submit">
+                                    <span>></span>
+                                </button>
 							</form>
 							
 							
