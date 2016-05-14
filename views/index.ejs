@@ -442,14 +442,48 @@
 						<div class="panel panel-default">
 						
 							<div class="panel-heading">
-								Directorio
-								<button class="btn btn-primary" ng-click="addDocument()"><span class="
-glyphicon glyphicon-file" aria-hidden="true"></span></button><button class="btn btn-success" ng-click="addDirectory()"><span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span></button><input type="text" class="form-control" ng-model="nameFile">	
+                            <!--
+                            <div class="col-lg-15">
+                                    <div class="input-group">
+                                      <input type="text" class="form-control" ng-model="newmessage.text">
+                                      <span class="input-group-btn">
+                                        <button class="btn btn-success" ng-click="addDocument()">
+                                            <span class="glyphicon glyphicon-file" aria-hidden="true">
+                                        </button>
+                                      </span>
+                                    </div>
+                                </div>-->
+                            <!--    
+                            <div class="col-lg-15">
+                                    <div class="input-group">
+                                      <input type="text" class="form-control" ng-model="newmessage.text">
+                                      <span class="input-group-btn">
+                                        <button class="btn btn-success" ng-click="addDirectory()">
+                                            <span class="glyphicon glyphicon-folder-close" aria-hidden="true">
+                                        </button>
+                                      </span>
+                                    </div>
+                                </div>-->
+                            
+                            
+								<!--Directorio-->
+								<button class="btn btn-primary" ng-click="addDocument()">
+                                    <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                                </button>
+                                
+                                <button class="btn btn-success" ng-click="addDirectory()">
+                                    <span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
+                                </button>
+                                
+                                <input type="text" class="form-control" ng-model="nameFile">	
 															
 							</div>
 							
-							<div class="panel-body minH">
-								<js-tree tree-data="scope" tree-model="treeModel" tree-events="ready:readyCB;changed:changedCB;open_node:openNodeCB"></js-tree>
+							<div class="panel-body minH4">
+                            
+                                <div class="minH5" style="overflow: scroll; width:100%">
+								    <js-tree tree-data="scope" tree-model="treeModel" tree-events="ready:readyCB;changed:changedCB;open_node:openNodeCB"></js-tree>
+                                </div>
 							</div>
 						</div>
 					</div>
@@ -475,12 +509,14 @@ glyphicon glyphicon-file" aria-hidden="true"></span></button><button class="btn 
 					</div>
 					
 					<div class="col-md-2">
-						<div class="panel panel-default panel-success">
+						<div class="panel panel-default">
 						
 							<div class="panel-heading">
 								Colaboradores
 							</div>
-							<div style="height: 300px; overflow: scroll;overflow-x: hidden; width:100%">
+                    <div class="panel-body minH4">
+                    
+							<div class="minH5" style="overflow: scroll;overflow-x: hidden; width:100%">
                              
                              <div ng-repeat="message in messages" >
                              
@@ -488,7 +524,7 @@ glyphicon glyphicon-file" aria-hidden="true"></span></button><button class="btn 
                                 
                         <li ng-if="message.user==user.username" >
                         
-                            <div class="chat-body clearfix mess-user">
+                            <div class="chat-body mess-user">
 
                                 <p>
                                     {{message.text}}.
@@ -498,7 +534,7 @@ glyphicon glyphicon-file" aria-hidden="true"></span></button><button class="btn 
                         </li>
                         
                         <li ng-if="message.user!=user.username" >
-                            <div class="chat-body clearfix mess-colab">
+                            <div class="chat-body mess-colab">
                                 <div class="header">
                                     <strong >{{message.user}}</strong>
                                 </div>
@@ -515,15 +551,24 @@ glyphicon glyphicon-file" aria-hidden="true"></span></button><button class="btn 
                                 
                             </div>
 							<div>
-							<form id="chatForm" ng-submit="send(newmessage)" class="">
-								
-                                <input id="txt" style="width:70%"required title="Escribe un mensaje" type="text" ng-model="newmessage.text"></input>
-								<button class="btn btn-success" type="submit">
-                                    <span>></span>
-                                </button>
+							
+                            <form id="chatForm" ng-submit="send(newmessage)" class="">
+                            
+                                
+                                
+                                <div class="col-lg-15">
+                                    <div class="input-group">
+                                      <input type="text" class="form-control" ng-model="newmessage.text">
+                                      <span class="input-group-btn">
+                                        <button class="btn btn-success" type="submit">></button>
+                                      </span>
+                                    </div><!-- /input-group -->
+                                </div><!-- /.col-lg-6 -->
+                                
+                                
 							</form>
 							
-							
+							</div>
 
 							</div>
 						</div>

@@ -65,6 +65,14 @@ body {
 	min-height:15vh;
 }
 
+.minH4{
+	max-height:75vh;
+}
+
+.minH5{
+	max-height:65vh;
+}
+
 .lneHgtTd{
 	line-height: 46px !important;
 }
@@ -112,19 +120,6 @@ a.powered-by-firepad {
     display: none;
 }
 
-#send-bttn
-{
-    
-    width:30px;
-    height:30px;
-    border-radius: 20px;
-    background-image: url(../images/send_icon.png);
-    background-repeat: no-repeat;
-    background-size:cover
-}
-
-
-
 .mess-user
 {
    text-align: right;
@@ -154,16 +149,11 @@ height:auto;
     border-bottom: 1px dotted #B3A9A9;
 }
 
-.chat li.left .chat-body
+.chat-body
 {
-    margin-left: 60px;
+    
+    width="100%";
 }
-
-.chat li.right .chat-body
-{
-    margin-right: 60px;
-}
-
 
 .chat li .chat-body p
 {
@@ -173,7 +163,7 @@ height:auto;
     padding: 2px 2px 2px 2px;
     border-radius: 5px;
     word-wrap: break-word;
-    width: 80%;
+    width: 100%;
     
 }
 
