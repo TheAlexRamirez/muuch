@@ -239,17 +239,17 @@ function(post, $scope, $stateParams, projects, $state, auth,$firebaseArray){
 	
 	$scope.project = post;
 	
-	var ref = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id);
+	var refN = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id);
 	
 	//Getting the firebase object (project)
-	$scope.fireProject = $firebaseArray(ref);
+	$scope.fireProject = $firebaseArray(refN);
 
 	$scope.updateTree = function()
 	{
-		$scope.fireProject = $firebaseArray(ref);
+		$scope.fireProject = $firebaseArray(refN);
 		//When the array is loaded, convert to the jsTree JSON Format 
 		$scope.fireProject.$loaded().then(function(fireProject) {
-		   
+		   console.log(fireProject);
 			$scope.treeModel = [];
 			for(var i=0,j=0; i < fireProject.length; i++){
 				if(fireProject[i].type){
@@ -269,7 +269,7 @@ function(post, $scope, $stateParams, projects, $state, auth,$firebaseArray){
 	
 	$scope.readyCB = function() {
      // console.log('ready event call back');
-		$scope.preventNewDirectory = true;
+		$scope.preventNewDirectory = false;
     };
 	
 	$scope.changedCB = function(e, data) {
@@ -298,7 +298,7 @@ function(post, $scope, $stateParams, projects, $state, auth,$firebaseArray){
 	
 	//// Create ACE
 	var editor = ace.edit("firepad-container");
-	editor.setTheme("ace/theme/textmate");
+	editor.setTheme("ace/theme/monokai");
 	var session = editor.getSession();
 	session.setUseWrapMode(true);
 	session.setUseWorker(false);
@@ -344,6 +344,7 @@ function(post, $scope, $stateParams, projects, $state, auth,$firebaseArray){
 			$scope.nameFile = "";
 			$scope.updateTree();
 		}
+		
 		
 		
 	}
