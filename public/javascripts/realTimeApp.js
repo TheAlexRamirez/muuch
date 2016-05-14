@@ -755,6 +755,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 		$scope.user.colaboradorIndependiente = $scope.user.nombreInstitucion == 'Colaborador Independiente';
     
 	var colaboradores = [];
+	$scope.users = projects.users;
 	
 	if($scope.project){
 		$scope._id = $stateParams.id;
