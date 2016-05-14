@@ -9,7 +9,7 @@ function($stateProvider, $urlRouterProvider) {
 		.state('detalle-proyecto', {
 		  url: '/detalle-proyecto/{id}',
 		  templateUrl: '/detalle-proyecto.html',
-		  controller: 'ProjectsCtrl',
+		  controller: 'DetCtrl',
 		  resolve: {
 			post: ['$stateParams', 'projects', function($stateParams, projects) {
 				return projects.getProject($stateParams.id);
@@ -21,7 +21,7 @@ function($stateProvider, $urlRouterProvider) {
 		.state('usuario', {
 		  url: '/usuario/{id}',
 		  templateUrl: '/usuario.html',
-		  controller: 'ProjectsCtrl',
+		  controller: 'DetCtrl',
 		  resolve: {
 			post: ['$stateParams', 'projects', function($stateParams, projects) {
 				return projects.getUser($stateParams.id);
@@ -33,7 +33,7 @@ function($stateProvider, $urlRouterProvider) {
 		.state('usuarios', {
 		  url: '/usuarios',
 		  templateUrl: '/usuarios.html',
-		  controller: 'ProjectsCtrl',
+		  controller: 'DetCtrl',
 		  resolve: {
 			post: ['$stateParams', 'projects', function($stateParams, projects) {
 				if(projects.users.length==0)
@@ -73,14 +73,14 @@ function($stateProvider, $urlRouterProvider) {
 		.state('agregar-proyectos', {
 		  url: '/agregar-proyectos',
 		  templateUrl: '/agregar-proyectos.html',
-		  controller: 'ProjectsCtrl'
+		  controller: 'DetCtrl'
 		});
 		
 	$stateProvider
 		.state('editar-proyectos', {
 		  url: '/agregar-proyectos/{id}',
 		  templateUrl: '/agregar-proyectos.html',
-		  controller: 'ProjectsCtrl',
+		  controller: 'DetCtrl',
 		  resolve: {
 			//if($stateParams.id != null)
 			post: ['$stateParams', 'projects', function($stateParams, projects) {
@@ -212,6 +212,303 @@ function($scope, $state, auth, projects){
   
 }])
 
+
+
+app.controller('DetCtrl', [
+'post',
+'$scope',
+'$stateParams',
+'projects',
+'$state',
+'auth',
+function(post, $scope, $stateParams, projects, $state, auth){
+
+	$scope.iconos = [
+	{ url: 'ico-agenda'},
+	{ url: 'ico-blackboard'},
+	{ url: 'ico-blackboard-eraser'},
+	{ url: 'ico-book'},
+	{ url: 'ico-briefcase'},
+	{ url: 'ico-calendar'},
+	{ url: 'ico-computer'},
+	{ url: 'ico-ebook'},
+	{ url: 'ico-file'},
+	{ url: 'ico-folder'}];
+	
+	//console.log(post);
+	/*post.$promise.then(function(data){
+		console.log("project ",data);
+	});*/
+	
+	$scope.project = post;
+	
+	/*
+    
+    var refN = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id);
+	console.log("inicio",$stateParams.id)
+	//Getting the firebase object (project)
+	$scope.fireProject = $firebaseArray(refN);
+
+	$scope.updateTree = function()
+	{
+		$scope.fireProject = $firebaseArray(refN);
+		//When the array is loaded, convert to the jsTree JSON Format 
+		$scope.fireProject.$loaded().then(function(fireProject) {
+		   console.log(fireProject);
+			$scope.treeModel = [];
+			for(var i=0,j=0; i < fireProject.length; i++){
+				if(fireProject[i].type){
+					$scope.treeModel[j] = {};
+					$scope.treeModel[j].text = fireProject[i].name;
+					$scope.treeModel[j].id = fireProject[i].$id;
+					$scope.treeModel[j].parent = fireProject[i].parent;
+					$scope.treeModel[j].type = fireProject[i].type;
+					
+
+					j++;
+				}
+
+			}
+		});
+	}
+	
+	$scope.readyCB = function() {
+     // console.log('ready event call back');
+		$scope.preventNewDirectory = false;
+    };
+	
+	$scope.changedCB = function(e, data) {
+		//  console.log('changed event call back');
+		//console.log(data);
+		
+		if(data.node.original.type == 'file'){
+			$scope.actualIdDocument = data.node.id;
+			$scope.changePad($scope.actualIdDocument);
+			$scope.parentId = data.node.parent;
+			$scope.preventNewDirectory = true;
+			console.log("No puedes crear carpetas desde aqui");
+		}else{
+			$scope.parentId = data.node.id;	
+		}
+		
+		//console.log("padre cambiado a ",$scope.parentId);
+	};
+	$scope.openNodeCB = function(e, data) {
+		 // console.log('open-node event call back');	
+	};
+
+	$scope.updateTree();
+	$scope.parentId = "#";
+	
+	
+	//// Create ACE
+	var editor = ace.edit("firepad-container");
+	editor.setTheme("ace/theme/monokai");
+	var session = editor.getSession();
+	session.setUseWrapMode(true);
+	session.setUseWorker(false);
+	session.setMode("ace/mode/javascript");
+	
+	var ref,firepad;
+	
+			
+	$scope.changePad= function(actualId){
+		
+		if(firepad != null){
+			firepad.dispose();
+		}
+		editor.setValue("");
+		ref = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id+'/'+actualId);
+		firepad = Firepad.fromACE(ref, editor);
+		console.log("al2",$stateParams.id);
+			
+	}
+
+	//Adding a new File
+	$scope.addDocument= function(){
+		console.log($scope.nameFile);
+		$scope.fireProject.$add({
+			name : $scope.nameFile,
+			type : "file",
+			parent : $scope.parentId
+		});
+		$scope.nameFile = "";
+		$scope.updateTree();
+	}
+
+	//Adding a new Directory
+	$scope.addDirectory= function(){
+		//console.log($scope.nameFile);
+		
+		if(!$scope.preventNewDirectory){
+			$scope.fireProject.$add({
+			name : $scope.nameFile,
+			type : "directory",
+			parent : $scope.parentId
+			});
+			$scope.nameFile = "";
+			$scope.updateTree();
+		}
+		
+		
+		
+	}
+    */
+
+
+	
+	
+	
+	$scope.users = projects.users;
+	
+	$scope.projectF = projects.project;
+	
+	$scope.user = auth.currentPayload();
+    //$scope.messages= Message.all;
+    
+    console.log($scope.user.username);
+    
+	if($scope.user)
+		$scope.user.colaboradorIndependiente = $scope.user.nombreInstitucion == 'Colaborador Independiente';
+    
+	var colaboradores = [];
+	
+	if($scope.project){
+		$scope._id = $stateParams.id;
+		$scope.nombre = $scope.project.nombre;
+		$scope.descripcion = $scope.project.descripcion;
+		$scope.icono = $scope.project.icono;
+		$scope.privado = $scope.project.privado + "";
+		$scope.colaboradores =  $scope.project.colaboradores;
+		
+		for(i=0; i< $scope.project.colaboradores.length; i++){
+			for(j=0; j< $scope.users.length; j++){
+				if($scope.project.colaboradores[i] == $scope.users[j]._id)
+					colaboradores.push($scope.users[j]);
+			}
+		}
+	}
+	
+	
+	var cachedQuery, lastSearch, pendingSearch, cancelSearch = angular.noop;
+	
+	$scope.loadContacts = function(){
+		return $scope.users;
+		
+		return [
+			{image: 'Avatar1', name: 'jose', email: 'jose@gmail.com'},
+			{image: 'Avatar2', name: 'antonio', email: 'antonio@gmail.com'},
+			{image: 'Avatar3', name: 'juan', email: 'juan@gmail.com'},
+			{image: 'Avatar4', name: 'pedro', email: 'pedro@gmail.com'},
+			{image: 'Avatar5', name: 'miguel', email: 'miguel@gmail.com'},
+			{image: 'Avatar6', name: 'jesus', email: 'jesus@gmail.com'}];
+	}
+	
+	
+	$scope.allContacts = $scope.loadContacts();
+	$scope.contacts = colaboradores;
+	$scope.filterSelected = false;
+	
+	$scope.querySearch = function(criteria){
+		cachedQuery = criteria;
+      return cachedQuery ? $scope.allContacts.filter(createFilterFor(cachedQuery)) : [];
+	}
+	function createFilterFor(query) {
+      var lowercaseQuery = angular.lowercase(query);
+
+      return function filterFn(contact) {
+        return (contact.username.toLowerCase().indexOf(lowercaseQuery) != -1);
+      };
+
+    }
+	
+	$scope.getUsers = function(){
+		projects.getUsers();
+	}
+	
+	
+	$scope.addProject = function(){
+		  if(!$scope.nombre || $scope.nombre === '' ||
+			 !$scope.descripcion ||
+			 !$scope.icono) { 
+				$scope.error =
+					new Object({message:"Por favor llene todos los campos"});
+					return; 
+		  }
+		  project = {
+			nombre: $scope.nombre,
+			descripcion: $scope.descripcion,
+			icono: $scope.icono,
+			privado: $scope.privado,
+			colaboradores: $scope.colaboradores
+		  };
+		  if($scope._id) 
+			  project._id = $scope._id;
+		  else {
+			  project._id = null;
+			  project.colaboradores = [auth.currentId()];
+		  }
+			  
+	  
+		  projects.create(project).error(function(error){
+			$scope.error = error;
+			if(!$scope.error.message)
+				if($scope.error.indexOf("duplicate key") != -1)
+					$scope.error =
+						new Object({message:"El nombre del proyecto ya esta registrado, favor de intentar con otro nombre de proyecto."});
+			
+			}).then(function(){
+				debugger;
+				if(project._id){
+					$state.go('proyectos');
+				}
+				else{
+					var idProyectoActual = projects.projects[projects.projects.length-1]._id;
+					var usuarioLogueado= auth.currentPayload();
+					if(!usuarioLogueado.proyectos)
+						usuarioLogueado.proyectos = [];
+					usuarioLogueado.proyectos.push(idProyectoActual);
+					auth.updateUserProjects(usuarioLogueado)
+							.error(function(error){
+								$scope.error = error;
+								
+							}).then(function(){
+								debugger;
+								$state.go('proyectos');
+								
+							});
+				}
+			});;
+		  $scope.nombre = '';
+		  $scope.descripcion = '';
+		  $scope._id = null;
+	};
+	/*
+	$scope.send = function(newmessage)
+    {
+		console.log(newmessage);
+        if(newmessage.text==null||newmessage==undefined)
+            {
+                console.log("vacio");
+                alert("Escribe algo tonto");
+                return;
+            }
+        
+        newmessage.user = $scope.user.username;
+        newmessage.iduser = $scope.user._id;
+        console.log(newmessage);
+        console.log("entra crear");
+        Message.create(newmessage);
+        newmessage.text = null;
+        
+        var form = document.getElementById("chatForm");
+        form.reset();
+	};*/
+	
+}]);
+
+
+
 app.controller('ProjectsCtrl', [
 'post',
 '$scope',
@@ -244,7 +541,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	console.log($scope.project);
 	
 	var refN = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id);
-	
+	console.log("inicio",$stateParams.id)
 	//Getting the firebase object (project)
 	$scope.fireProject = $firebaseArray(refN);
 
@@ -329,7 +626,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 		editor.setValue("");
 		ref = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id+'/'+actualId);
 		firepad = Firepad.fromACE(ref, editor);
-		
+		console.log("al2",$stateParams.id);
 			
 	}
 
@@ -683,9 +980,10 @@ app.factory('auth', ['$http', '$window', function($http, $window){
   return auth;
 }])
 
-app.factory('Message', ['$firebaseArray',
-	function($firebaseArray) {
-		var ref = new Firebase('https://incandescent-inferno-2649.firebaseio.com');
+app.factory('Message', ['$firebaseArray','$stateParams',
+	function($firebaseArray,$stateParams) {
+		var ref = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id+'/messages');
+        console.log("mio",$stateParams.id);
 		var messages = $firebaseArray(ref);
 
 		var Message = {
