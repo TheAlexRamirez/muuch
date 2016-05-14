@@ -750,7 +750,7 @@ app.factory('auth', ['$http', '$window', function($http, $window){
   return auth;
 }])
 
-app.factory('Message', ['$firebaseArray','$stateParams'
+app.factory('Message', ['$firebaseArray','$stateParams',
 	function($firebaseArray,$stateParams) {
 		var ref = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id+'/messages');
 		var messages = $firebaseArray(ref);
