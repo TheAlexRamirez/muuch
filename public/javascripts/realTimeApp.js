@@ -1,10 +1,10 @@
-var app = angular.module('realTime', ['ui.router', 'ngMaterial', 'ui.bootstrap','firebase','jsTree.directive'])
+var app = angular.module('realTime', ['ui.router', 'ngMaterial', 'ui.bootstrap','firebase','jsTree.directive']);
 
 
 app.config([
 '$stateProvider',
 '$urlRouterProvider',
-function($stateProvider, $urlRouterProvider,firebase) {
+function($stateProvider, $urlRouterProvider) {
 	$stateProvider
 		.state('detalle-proyecto', {
 		  url: '/detalle-proyecto/{id}',
@@ -242,17 +242,17 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	
 	$scope.project = post;
 	
-	var ref = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id);
+	var refN = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id);
 	
 	//Getting the firebase object (project)
-	$scope.fireProject = $firebaseArray(ref);
+	$scope.fireProject = $firebaseArray(refN);
 
 	$scope.updateTree = function()
 	{
-		$scope.fireProject = $firebaseArray(ref);
+		$scope.fireProject = $firebaseArray(refN);
 		//When the array is loaded, convert to the jsTree JSON Format 
 		$scope.fireProject.$loaded().then(function(fireProject) {
-		   
+		   console.log(fireProject);
 			$scope.treeModel = [];
 			for(var i=0,j=0; i < fireProject.length; i++){
 				if(fireProject[i].type){
@@ -272,7 +272,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	
 	$scope.readyCB = function() {
      // console.log('ready event call back');
-		$scope.preventNewDirectory = true;
+		$scope.preventNewDirectory = false;
     };
 	
 	$scope.changedCB = function(e, data) {
@@ -347,6 +347,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 			$scope.nameFile = "";
 			$scope.updateTree();
 		}
+		
 		
 		
 	}
@@ -649,10 +650,10 @@ app.factory('auth', ['$http', '$window', function($http, $window){
   return auth;
 }])
 
-app.factory('Message', ['$firebase',
-	function($firebase) {
+app.factory('Message', ['$firebaseArray',
+	function($firebaseArray) {
 		var ref = new Firebase('https://incandescent-inferno-2649.firebaseio.com');
-		var messages = $firebase(ref.child('messages')).$asArray();
+		var messages = $firebaseArray(ref);
 
 		var Message = {
 			all: messages,
@@ -660,7 +661,7 @@ app.factory('Message', ['$firebase',
 				return messages.$add(message);
 			},
 			get: function (messageId) {
-				return $firebase(ref.child('messages').child(messageId)).$asObject();
+				return $firebaseObject(ref.child('messages').child(messageId));
 			},
 			delete: function (message) {
 				return messages.$remove(message);
