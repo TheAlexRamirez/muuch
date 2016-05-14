@@ -42,7 +42,7 @@ socketio(server).of('pty').on('connection', function(socket) {
 	ss(socket).on('new', function(stream, options) {
 		var name = options.name;
 
-		var pty = child_pty.spawn('/bin/sh', ['-c', "echo \"Please don't use this in productive environments as all keystrokes are sent in plain text!\"; /bin/sh"], options);
+		var pty = child_pty.spawn('/bin/sh', ['-c', "echo \"Muuch Waakun Interpreter 0.0.1\"; /bin/sh"], options);
 		pty.stdout.pipe(stream).pipe(pty.stdin);
 		ptys[name] = pty;
 		socket.on('disconnect', function() {

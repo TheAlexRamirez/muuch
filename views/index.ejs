@@ -129,7 +129,7 @@
 <script src="socket.io/socket.io.js"></script>
 <script src="javascripts/socket.io-stream.js"></script>
 <script src="javascripts/terminal.js"></script>
-<script src="javascripts/webterm.js"></script>
+
 
 			
   <!-- Custom Scripts -->
@@ -427,12 +427,15 @@
 	<div class="container col-md-12">
 		<div class="panel panel-default ">
 			<div class="panel-heading">
-				<h3>
-				  <span>
-					Nombre: {{nombre}}
-				  </span>
+				<div class=".col-md-12">
+				  <h2>{{project.nombre}} <small>{{project.descripcion}}</small></h2>
+				  
+						<button class="btn btn-success btn-lg .col-md-offset-6"><span class="
+glyphicon glyphicon-play" aria-hidden="true"></span>  Run</button>
 					
-				</h3>
+				</div>
+				
+				
 			</div>
 			<div class="panel-body">
 				<div class="row">
@@ -442,8 +445,8 @@
 						
 							<div class="panel-heading">
 								Directorio
-								<button class="btn btn-primary" ng-click="addDocument()"><span class="
-glyphicon glyphicon-file" aria-hidden="true"></span></button><button class="btn btn-success" ng-click="addDirectory()"><span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span></button><input type="text" class="form-control" ng-model="nameFile">	
+								<button class="btn btn-default" ng-click="addDocument()"><span class="
+glyphicon glyphicon-file" aria-hidden="true"></span></button><button class="btn btn-default" ng-click="addDirectory()"><span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span></button><input type="text" class="form-control" ng-model="nameFile">	
 															
 							</div>
 							

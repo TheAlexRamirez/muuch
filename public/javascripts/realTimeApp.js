@@ -241,6 +241,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	});*/
 	
 	$scope.project = post;
+	console.log($scope.project);
 	
 	var refN = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id);
 	
