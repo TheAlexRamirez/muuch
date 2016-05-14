@@ -6,7 +6,6 @@
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.css">
 	
 	
-	
 	<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 	  <!-- Firepad -->
   <link rel="stylesheet" href="https://cdn.firebase.com/libs/firepad/1.3.0/firepad.css" />
@@ -122,6 +121,10 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 	<script src="javascripts/jsTree.directive.js"></script>
+	
+	<!--Alertify-->
+	
+	<script src="https://cdn.rawgit.com/alertifyjs/alertify.js/v1.0.10/dist/js/ngAlertify.js"></script>
 
 
 			
@@ -508,13 +511,13 @@
 								Colaboradores
 							</div>
 
-                    <div class="panel-body minH4" ng-init="goBot()">
+                    <div class="panel-body minH4">
                     
-							<div id="foo" class="minH5" style="overflow: scroll;overflow-x: hidden; width:100%">
+							<div ng-model="change" ng-change="change()" id="foo" class="minH5" style="overflow: scroll;overflow-x: hidden; width:100%">
                              
                     <div ng-repeat="message in messages" >
                              
-                                <ul id="list" class="chat">
+                                <ul id="list" ng-model="change" ng-change="change()" class="chat">
                                 
                         <li ng-if="message.user==user.username" >
                         

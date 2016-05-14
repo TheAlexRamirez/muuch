@@ -1,4 +1,4 @@
-var app = angular.module('realTime', ['ui.router', 'ngMaterial', 'ui.bootstrap','firebase','jsTree.directive']);
+var app = angular.module('realTime', ['ngAlertify','ui.router', 'ngMaterial', 'ui.bootstrap','firebase','jsTree.directive']);
 
 
 app.config([
@@ -221,8 +221,9 @@ app.controller('ProjectsCtrl', [
 'auth',
 'Message',
 '$firebaseArray',
-	'$http',
-function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http){
+'$http',
+'alertify',
+function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http,alertify){
 
 	$scope.iconos = [
 	{ url: 'ico-agenda'},
@@ -339,8 +340,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
         
         if($scope.nameFile==undefined)
         {
-            
-            alert('Ingresa un nombre de documento');
+            alertify.delay(5000).error("Ingresa un nombre de documento");
             return;
             
         }
@@ -359,8 +359,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
         
 		if($scope.nameFile==undefined)
         {
-            
-            alert('Ingresa un nombre de carpeta');
+            alertify.delay(5000).error("Ingresa un nombre de carpeta");
             return;
             
         }
@@ -377,12 +376,9 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
         
         else
         {
-            
-            alert('No es posible generar una carpeta a partir de un archivo');
+            alertify.delay(5000).error("No es posible generar una carpeta a partir de un archivo");
             
         }
-		
-		
 		
 	}
 	
@@ -454,11 +450,13 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	
 	$scope.user = auth.currentPayload();
     $scope.messages= Message.all;
-    var foo = document.getElementById('foo');
-    //var foo = document.getElementById('foo');
-    foo.scrollTop = foo.scrollHeight;
     
-    console.log($scope.user.username);
+   /* var obj = $firebaseObject(ref);
+    var unwatch = obj.$watch(function() {
+      console.log("data changed!");
+    });*/
+    
+   
     
 	if($scope.user)
 		$scope.user.colaboradorIndependiente = $scope.user.nombreInstitucion == 'Colaborador Independiente';
@@ -575,15 +573,6 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 		  $scope.descripcion = '';
 		  $scope._id = null;
 	};
-	
-    $scope.goBot = function()
-    {
-        
-        console.log("on load");
-        var foo = document.getElementById('foo');
-        foo.scrollTop = foo.scrollHeight;
-        
-    }
     
 	$scope.send = function(newmessage)
     {
@@ -598,9 +587,16 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
         Message.create(newmessage);
         newmessage.text = null;
         
+	};
+    
+    $scope.change = function()
+    {
+        
+        console.log("cambio");
         var objDiv = document.getElementById("foo");
         objDiv.scrollTop = objDiv.scrollHeight;
-	};
+        
+    }
 	
 }]);
 
@@ -754,7 +750,15 @@ app.factory('Message', ['$firebaseArray','$stateParams',
 	function($firebaseArray,$stateParams) {
 		var ref = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id+'/messages');
 		var messages = $firebaseArray(ref);
-
+        
+        var unwatch = messages.$watch(function() {
+        
+            console.log("data changed!");
+            var objDiv = document.getElementById("foo");
+            objDiv.scrollTop = objDiv.scrollHeight;
+        
+        });
+        
 		var Message = {
 			all: messages,
 			create: function (message) {
