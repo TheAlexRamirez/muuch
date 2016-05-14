@@ -512,7 +512,7 @@
                     
 							<div class="minH5" style="overflow: scroll;overflow-x: hidden; width:100%">
                              
-                             <div ng-repeat="message in messages" >
+                    <div ng-repeat="message in messages" >
                              
                                 <ul class="chat">
                                 
@@ -532,8 +532,18 @@
                                 <div class="header">
                                     <strong >{{message.user}}</strong>
                                 </div>
+                                
+                                <p>
+                                    {{message.text}}.
+                                </p>
                             </div>
-							<div>
+                        </li>
+                        </ul>
+                            
+							
+							</div>
+
+							</div>
                             <form id="chatForm" ng-submit="send(newmessage)" class="">
                                 <div class="col-lg-15">
                                     <div class="input-group">
@@ -544,10 +554,6 @@
                                     </div><!-- /input-group -->
                                 </div><!-- /.col-lg-6 -->
 							</form>
-							
-							</div>
-
-							</div>
 						</div>
 					</div>
 				</div>
