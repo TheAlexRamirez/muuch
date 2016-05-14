@@ -125,7 +125,9 @@
 	<script src="javascripts/jsTree.directive.js"></script>
 
 
-			
+  <!-- AngularFire -->
+	<script src="https://cdn.firebase.com/libs/angularfire/0.9.2/angularfire.min.js"></script>
+
   <!-- Custom Scripts -->
   <script src="/javascripts/realTimeApp.js"></script>
 
@@ -423,7 +425,7 @@
 			<div class="panel-heading">
 				<h3>
 				  <span>
-					{{nombre}}
+					P: {{nombre}}
 				  </span>
 					
 				</h3>
@@ -469,46 +471,26 @@ glyphicon glyphicon-file" aria-hidden="true"></span></button><button class="btn 
 						<div class="panel panel-default panel-success">
 						
 							<div class="panel-heading">
-								Colaboradores
+								Colaboradoresd
 							</div>
-							
-							<div class="panel-body minH">
-							<form ng-submit="saveCollaborators()" class="">
-								<md-content class="md-padding autocomplete" layout="column">
-									<md-contact-chips ng-model="contacts" md-contacts="querySearch($query)" md-contact-name="username" md-contact-image="iconoAvatar" md-contact-email="correoElectronico" md-require-match="true" md-highlight-flags="i" filter-selected="filterSelected" placeholder="Colaboradores">
-									</md-contact-chips>
-
-									<md-list class="fixedRows" style="height:300px;">
-									  <md-subheader class="md-no-sticky">Contacts</md-subheader>
-									  
-									  <md-list-item class="md-2-line contact-item selected" ng-repeat="(index, contact) in contacts">
-										<img ng-src="{{ contact.iconoAvatar }}" class="md-avatar" alt="{{contact.username}}">
-										<div class="md-list-item-text compact">
-										  <h3>{{contact.username}}</h3>
-										  <p>{{contact.correoElectronico}}</p>
-										</div>
-									  </md-list-item>
-									  
-									  <md-list-item class="md-2-line contact-item" ng-repeat="(index, contact) in allContacts" ng-if="contacts.indexOf(contact) < 0">
-										<a ng-href="/#/usuario/{{contact._id}}" target="_blank">
-										<img ng-src="{{ contact.iconoAvatar }}" class="md-avatar" alt="{{contact.username}}">
-										</a>
-										<div class="md-list-item-text compact">
-										  <h3>{{contact.username}}</h3>
-										  <p>{{contact.correoElectronico}}</p>
-										</div>
-									  </md-list-item>
-									  
-									</md-list>
-								</md-content>
+							<div style="height: 300px; overflow: scroll;overflow-x: hidden;">
+                                <div  ng-repeat="message in messages" >
+                                    <div class="message mess-colab" ng-if="message.user!=user.username">
+                                        {{message.user}}: {{message.text}}
+                                    </div>
+                                    <div class="message mess-user" style="text-align:right"ng-if="message.user==user.username">
+                                        {{message.text}}
+                                    </div>
+                                </div>
+                            </div>
+							<div>
+							<form id="chatForm" ng-submit="send(newmessage)" class="">
 								
-								<md-button type="submit" class="md-raised md-primary">Guardar Colaboradores</md-button>
-								
+                                <input style="width:70%"required title="Escribe un mensaje" type="text" ng-model="newmessage.text"></input>
+								<button id="send-bttn" type="submit"></button>
 							</form>
 							
-							<div ng-show="error" class="alert alert-danger row">
-								<span>{{ error.message }}</span>
-							</div>
+							
 
 							</div>
 						</div>

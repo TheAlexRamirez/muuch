@@ -1,9 +1,10 @@
 var app = angular.module('realTime', ['ui.router', 'ngMaterial', 'ui.bootstrap','firebase','jsTree.directive'])
 
+
 app.config([
 '$stateProvider',
 '$urlRouterProvider',
-function($stateProvider, $urlRouterProvider) {
+function($stateProvider, $urlRouterProvider,firebase) {
 	$stateProvider
 		.state('detalle-proyecto', {
 		  url: '/detalle-proyecto/{id}',
@@ -218,8 +219,10 @@ app.controller('ProjectsCtrl', [
 'projects',
 '$state',
 'auth',
+'Message',
 '$firebaseArray',
-function(post, $scope, $stateParams, projects, $state, auth,$firebaseArray){
+function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArray){
+
 	$scope.iconos = [
 	{ url: 'ico-agenda'},
 	{ url: 'ico-blackboard'},
@@ -357,10 +360,14 @@ function(post, $scope, $stateParams, projects, $state, auth,$firebaseArray){
 	
 	$scope.projectF = projects.project;
 	
-	$scope.user = projects.user;
+	$scope.user = auth.currentPayload();
+    $scope.messages= Message.all;
+    
+    console.log($scope.user.username);
+    
 	if($scope.user)
 		$scope.user.colaboradorIndependiente = $scope.user.nombreInstitucion == 'Colaborador Independiente';
-	
+    
 	var colaboradores = [];
 	
 	if($scope.project){
@@ -474,44 +481,25 @@ function(post, $scope, $stateParams, projects, $state, auth,$firebaseArray){
 		  $scope._id = null;
 	};
 	
-	$scope.saveCollaborators = function(){
-		
-		proyecto = angular.copy($scope.project);
-		usuariosTotales = $scope.users;
-		proyecto.colaboradores = angular.copy($scope.contacts);
-		debugger;
-		
-		proyecto.colaboradores.splice(0,0,auth.currentPayload());
-	
-		projects.create(proyecto).error(function(error){
-			$scope.error = error;
-			if(!$scope.error.message)
-				if($scope.error.indexOf("duplicate key") != -1)
-					$scope.error =
-						new Object({message:"El nombre del proyecto ya esta registrado, favor de intentar con otro nombre de proyecto."});
-			
-			}).then(function(){
-			  debugger;
-				for(i=0; i < proyecto.colaboradores.length; i++){
-					
-					if(proyecto.colaboradores[i].proyectos.indexOf(proyecto._id) == -1) 
-						proyecto.colaboradores[i].proyectos.push(proyecto._id);
-					
-					auth.updateUserProjects(proyecto.colaboradores[i])
-						.error(function(error){
-							debugger;
-							$scope.error = error;
-							if(!$scope.error.message)
-								if($scope.error.indexOf("duplicate key") != -1)
-									$scope.error =
-										new Object({message:"El nombre de usuario ya esta registrado, favor de intentar con otro nombre de usuario."});
-						}).then(function(){
-							debugger;
-							$scope.error =
-								new Object({message:"Los colaboradores fueron agregados exitosamente."});
-						});
-				}
-			});;
+	$scope.send = function(newmessage)
+    {
+		console.log(newmessage);
+        if(newmessage.text==null||newmessage==undefined)
+            {
+                console.log("vacio");
+                alert("Escribe algo tonto");
+                return;
+            }
+        
+        newmessage.user = $scope.user.username;
+        newmessage.iduser = $scope.user._id;
+        console.log(newmessage);
+        console.log("entra crear");
+        Message.create(newmessage);
+        newmessage.text = null;
+        
+        var form = document.getElementById("chatForm");
+        form.reset();
 	};
 	
 }]);
@@ -661,6 +649,29 @@ app.factory('auth', ['$http', '$window', function($http, $window){
    
   return auth;
 }])
+
+app.factory('Message', ['$firebase',
+	function($firebase) {
+		var ref = new Firebase('https://incandescent-inferno-2649.firebaseio.com');
+		var messages = $firebase(ref.child('messages')).$asArray();
+
+		var Message = {
+			all: messages,
+			create: function (message) {
+				return messages.$add(message);
+			},
+			get: function (messageId) {
+				return $firebase(ref.child('messages').child(messageId)).$asObject();
+			},
+			delete: function (message) {
+				return messages.$remove(message);
+			}
+		};
+
+		return Message;
+
+	}
+	]);
 
 
 app.factory('projects', ['$http', 'auth', function($http, auth){
