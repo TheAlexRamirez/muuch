@@ -10,6 +10,9 @@
 	<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 	  <!-- Firepad -->
   <link rel="stylesheet" href="https://cdn.firebase.com/libs/firepad/1.3.0/firepad.css" />
+	  <!--jstree-->
+	  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+
  
 	
 	<style>
@@ -106,12 +109,21 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/ace.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/mode-javascript.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/theme-textmate.js"></script>
-			
+	
   <!-- Firebase -->
   <script src="https://cdn.firebase.com/js/client/2.3.2/firebase.js"></script>
 			
   <!--Firepad -->
   <script src="https://cdn.firebase.com/libs/firepad/1.3.0/firepad.min.js"></script>
+			
+  <!-- AngularFire -->
+  <script src="https://cdn.firebase.com/libs/angularfire/1.2.0/angularfire.min.js"></script>
+			
+	<!--Angular Tree -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+	<script src="javascripts/jsTree.directive.js"></script>
+
 
 			
   <!-- Custom Scripts -->
@@ -424,12 +436,12 @@
 						
 							<div class="panel-heading">
 								Directorio
-								<button class="btn btn-primary" >+</button><input type="text" class="form-control" >	
+								<button class="btn btn-primary" ng-click="addDocument()">+</button><button class="btn btn-success" ng-click="addDirectory()">+</button><input type="text" class="form-control" ng-model="nameFile">	
 															
 							</div>
 							
 							<div class="panel-body minH">
-								
+								<js-tree tree-data="scope" tree-model="treeModel" tree-events="ready:readyCB;changed:changedCB;open_node:openNodeCB"></js-tree>
 							</div>
 						</div>
 					</div>

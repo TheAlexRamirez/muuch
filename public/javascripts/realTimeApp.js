@@ -1,4 +1,4 @@
-var app = angular.module('realTime', ['ui.router', 'ngMaterial', 'ui.bootstrap'])
+var app = angular.module('realTime', ['ui.router', 'ngMaterial', 'ui.bootstrap','firebase','jsTree.directive'])
 
 app.config([
 '$stateProvider',
@@ -101,6 +101,7 @@ function($stateProvider, $urlRouterProvider) {
 			}]
 		  }
 		});
+
 
   $stateProvider
     .state('home', {
@@ -217,7 +218,8 @@ app.controller('ProjectsCtrl', [
 'projects',
 '$state',
 'auth',
-function(post, $scope, $stateParams, projects, $state, auth){
+'$firebaseArray',
+function(post, $scope, $stateParams, projects, $state, auth,$firebaseArray){
 	$scope.iconos = [
 	{ url: 'ico-agenda'},
 	{ url: 'ico-blackboard'},
@@ -238,7 +240,62 @@ function(post, $scope, $stateParams, projects, $state, auth){
 	$scope.project = post;
 	
 	var ref = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id);
+	
+	//Getting the firebase object (project)
+	$scope.fireProject = $firebaseArray(ref);
 
+	$scope.updateTree = function()
+	{
+		$scope.fireProject = $firebaseArray(ref);
+		//When the array is loaded, convert to the jsTree JSON Format 
+		$scope.fireProject.$loaded().then(function(fireProject) {
+		   
+			$scope.treeModel = [];
+			for(var i=0,j=0; i < fireProject.length; i++){
+				if(fireProject[i].type){
+					$scope.treeModel[j] = {};
+					$scope.treeModel[j].text = fireProject[i].name;
+					$scope.treeModel[j].id = fireProject[i].$id;
+					$scope.treeModel[j].parent = fireProject[i].parent;
+					$scope.treeModel[j].type = fireProject[i].type;
+					
+
+					j++;
+				}
+
+			}
+		});
+	}
+	
+	$scope.readyCB = function() {
+     // console.log('ready event call back');
+		$scope.preventNewDirectory = true;
+    };
+	
+	$scope.changedCB = function(e, data) {
+		//  console.log('changed event call back');
+		//console.log(data);
+		
+		if(data.node.original.type == 'file'){
+			$scope.actualIdDocument = data.node.id;
+			$scope.changePad($scope.actualIdDocument);
+			$scope.parentId = data.node.parent;
+			$scope.preventNewDirectory = true;
+			console.log("No puedes crear carpetas desde aqui");
+		}else{
+			$scope.parentId = data.node.id;	
+		}
+		
+		//console.log("padre cambiado a ",$scope.parentId);
+	};
+	$scope.openNodeCB = function(e, data) {
+		 // console.log('open-node event call back');	
+	};
+
+	$scope.updateTree();
+	$scope.parentId = "#";
+	
+	
 	//// Create ACE
 	var editor = ace.edit("firepad-container");
 	editor.setTheme("ace/theme/textmate");
@@ -246,10 +303,54 @@ function(post, $scope, $stateParams, projects, $state, auth){
 	session.setUseWrapMode(true);
 	session.setUseWorker(false);
 	session.setMode("ace/mode/javascript");
-	//// Create Firepad.
-	var firepad = Firepad.fromACE(ref, editor, {
-		defaultText: '// \nfunction go() {\n  var message = "Hello, world.";\n  console.log(message);\n}'
-	});
+	
+	var ref,firepad;
+	
+			
+	$scope.changePad= function(actualId){
+		
+		if(firepad != null){
+			firepad.dispose();
+		}
+		editor.setValue("");
+		ref = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id+'/'+actualId);
+		firepad = Firepad.fromACE(ref, editor);
+		
+			
+	}
+
+	//Adding a new File
+	$scope.addDocument= function(){
+		console.log($scope.nameFile);
+		$scope.fireProject.$add({
+			name : $scope.nameFile,
+			type : "file",
+			parent : $scope.parentId
+		});
+		$scope.nameFile = "";
+		$scope.updateTree();
+	}
+
+	//Adding a new Directory
+	$scope.addDirectory= function(){
+		//console.log($scope.nameFile);
+		
+		if(!$scope.preventNewDirectory){
+			$scope.fireProject.$add({
+			name : $scope.nameFile,
+			type : "directory",
+			parent : $scope.parentId
+			});
+			$scope.nameFile = "";
+			$scope.updateTree();
+		}
+		
+		
+	}
+
+
+	
+	
 	
 	$scope.users = projects.users;
 	
