@@ -685,9 +685,11 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	{ url: 'ico-file'},
 	{ url: 'ico-folder'}];
 	
-	console.log(post);
+	
 	$scope.project = post;
-	console.log($scope.project);
+	
+	
+	$scope.actualFile = "";
 	
 	var refN = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id);
 	
@@ -699,7 +701,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 		$scope.fireProject = $firebaseArray(refN);
 		//When the array is loaded, convert to the jsTree JSON Format 
 		$scope.fireProject.$loaded().then(function(fireProject) {
-		   console.log(fireProject);
+		  
 			$scope.treeModel = [];
 			for(var i=0,j=0; i < fireProject.length; i++){
 				if(fireProject[i].type == "file"){
@@ -732,9 +734,13 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 		$scope.preventNewDirectory = false;
     };
 	
+
 	$scope.changedCB = function(e, data) {
 		//  console.log('changed event call back');
 		//console.log(data);
+		
+		$scope.actualFile = data.node.text;
+		
 		
 		if(data.node.original.type == 'file'){
 			$scope.actualIdDocument = data.node.id;
@@ -870,8 +876,42 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 			// Create bidirectional stream
 			stream = ss.createStream({decodeStrings: false, encoding: 'utf-8'});
 
-			// Send stream and options to the server
-			ss(socket).emit('compile', stream, {"content" : editor.getValue(), "interpreter" : $scope.langTarget, "name" : "t1"});
+			
+		
+			
+			var py= [".py"];
+			var isPy = (new RegExp('(' + py.join('|').replace(/\./g, '\\.') + ')$')).test($scope.actualFile);
+			
+			var java = [".java"];
+			var isJava = (new RegExp('(' + java.join('|').replace(/\./g, '\\.') + ')$')).test($scope.actualFile);
+			
+			var js = [".js"];
+			var isJS = (new RegExp('(' + js.join('|').replace(/\./g, '\\.') + ')$')).test($scope.actualFile);
+			
+			var c = [".c"];
+			var isC = (new RegExp('(' + c.join('|').replace(/\./g, '\\.') + ')$')).test($scope.actualFile);
+			
+			var cpp = [".cpp"];
+			var isCpp = (new RegExp('(' + cpp.join('|').replace(/\./g, '\\.') + ')$')).test($scope.actualFile);
+		
+			if(isPy){
+				// Send stream and options to the server
+				ss(socket).emit('compile', stream, {"content" : editor.getValue(), "interpreter" : "Python", "name" : "t1"});
+			} else if(isJava){
+				// Send stream and options to the server
+				ss(socket).emit('compile', stream, {"content" : editor.getValue(), "interpreter" : "Java", "name" : "t1"});
+			} else if(isJS){
+				// Send stream and options to the server
+				ss(socket).emit('compile', stream, {"content" : editor.getValue(), "interpreter" : "Javascript", "name" : "t1"});
+			} else if(isC){
+				// Send stream and options to the server
+				ss(socket).emit('compile', stream, {"content" : editor.getValue(), "interpreter" : "C", "name" : "t1"});
+			} else if(isCpp){
+				// Send stream and options to the server
+				ss(socket).emit('compile', stream, {"content" : editor.getValue(), "interpreter" : "C++", "name" : "t1"});
+			} 
+			
+			
 
 			if(containers[i].dataset.exec)
 				{
