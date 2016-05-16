@@ -78,8 +78,8 @@ function($stateProvider, $urlRouterProvider) {
 		
 	$stateProvider
 		.state('editar-proyectos', {
-		  url: '/agregar-proyectos/{id}',
-		  templateUrl: '/agregar-proyectos.html',
+		  url: '/editar-proyectos/{id}',
+		  templateUrl: '/editar-proyectos.html',
 		  controller: 'editProjectCtrl',
 		  resolve: {
 			//if($stateParams.id != null)
@@ -280,6 +280,9 @@ function($scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$ht
 	{ url: 'ico-ebook'},
 	{ url: 'ico-file'},
 	{ url: 'ico-folder'}];
+    
+    
+    
 	
 	$scope.addProject = function(){
 		  if(!$scope.nombre || $scope.nombre === '' ||
@@ -303,6 +306,47 @@ function($scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$ht
 			  project.colaboradores = [auth.currentId()];
 		  }
 		
+        
+        $scope.saveCollaborators = function(){
+		console.log("entra");
+            
+		proyecto = angular.copy($scope.project);
+		usuariosTotales = $scope.users;
+		proyecto.colaboradores = angular.copy($scope.contacts);
+		debugger;
+		
+		proyecto.colaboradores.splice(0,0,auth.currentPayload());
+	
+		projects.create(proyecto).error(function(error){
+			$scope.error = error;
+			if(!$scope.error.message)
+				if($scope.error.indexOf("duplicate key") != -1)
+					$scope.error =
+						new Object({message:"El nombre del proyecto ya esta registrado, favor de intentar con otro nombre de proyecto."});
+			
+			}).then(function(){
+			  debugger;
+				for(i=0; i < proyecto.colaboradores.length; i++){
+					
+					if(proyecto.colaboradores[i].proyectos.indexOf(proyecto._id) == -1) 
+						proyecto.colaboradores[i].proyectos.push(proyecto._id);
+					
+					auth.updateUserProjects(proyecto.colaboradores[i])
+						.error(function(error){
+							debugger;
+							$scope.error = error;
+							if(!$scope.error.message)
+								if($scope.error.indexOf("duplicate key") != -1)
+									$scope.error =
+										new Object({message:"El nombre de usuario ya esta registrado, favor de intentar con otro nombre de usuario."});
+						}).then(function(){
+							debugger;
+							$scope.error =
+								new Object({message:"Los colaboradores fueron agregados exitosamente."});
+						});
+				}
+			});;
+	};
 		
 			  
 	  
@@ -339,6 +383,9 @@ function($scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$ht
 		  $scope.descripcion = '';
 		  $scope._id = null;
 	};
+    
+    
+    
 	
 	
 }]);
@@ -371,7 +418,8 @@ function(post,$scope, $stateParams, projects, $state, auth,Message,$firebaseArra
 	
 	$scope.project = post;
 	$scope.users = projects.users;
-	
+	var colaboradores = [];
+    
 	if($scope.project){
 		$scope._id = $stateParams.id;
 		$scope.nombre = $scope.project.nombre;
@@ -386,7 +434,107 @@ function(post,$scope, $stateParams, projects, $state, auth,Message,$firebaseArra
 			}
 		}
 	}
+    
+    var cachedQuery, lastSearch, pendingSearch, cancelSearch = angular.noop;
+    projects.getUsers();
+	//console.log(projects.users);
+	$scope.contacts = projects.users;
+    console.log("prousere",projects.users);
+    
+	
+	$scope.loadContacts = function(){
+		return $scope.contacts;
+	}
+	/*
+	
+	
+	if($scope.project){
+		$scope._id = $stateParams.id;
+		$scope.nombre = $scope.project.nombre;
+		$scope.descripcion = $scope.project.descripcion;
+		$scope.icono = $scope.project.icono;
+		$scope.privado = $scope.project.privado + "";
+		$scope.colaboradores =  $scope.project.colaboradores;
+		
+		for(i=0; i< $scope.project.colaboradores.length; i++){
+			for(j=0; j< $scope.users.length; j++){
+				if($scope.project.colaboradores[i] == $scope.users[j]._id)
+					colaboradores.push($scope.users[j]);
+			}
+		}
+	}
+	*/
+    
+    console.log("colab",colaboradores);
+    
+	$scope.allContacts = $scope.loadContacts();
+	$scope.contacts = colaboradores;
+	
+	$scope.filterSelected = false;
+	$scope.querySearch = function(criteria){
+		cachedQuery = criteria;
+      return cachedQuery ? $scope.allContacts.filter(createFilterFor(cachedQuery)) : [];
+	}
+	
+	function createFilterFor(query) {
+      var lowercaseQuery = angular.lowercase(query);
 
+      return function filterFn(contact) {
+        return (contact.username.toLowerCase().indexOf(lowercaseQuery) != -1);
+      };
+
+    }
+	
+	if($scope.user)
+		$scope.user.colaboradorIndependiente = $scope.user.nombreInstitucion == 'Colaborador Independiente';
+    
+	
+	
+	$scope.getUsers = function(){
+		projects.getUsers();
+	}
+    
+
+    $scope.saveCollaborators = function(){
+		
+		proyecto = angular.copy($scope.project);
+        console.log($scope.proyect);
+		usuariosTotales = $scope.users;
+		proyecto.colaboradores = angular.copy($scope.contacts);
+		debugger;
+		
+		proyecto.colaboradores.splice(0,0,auth.currentPayload());
+	
+		projects.create(proyecto).error(function(error){
+			$scope.error = error;
+			if(!$scope.error.message)
+				if($scope.error.indexOf("duplicate key") != -1)
+					$scope.error =
+						new Object({message:"El nombre del proyecto ya esta registrado, favor de intentar con otro nombre de proyecto."});
+			
+			}).then(function(){
+			  debugger;
+				for(i=0; i < proyecto.colaboradores.length; i++){
+					
+					if(proyecto.colaboradores[i].proyectos.indexOf(proyecto._id) == -1) 
+						proyecto.colaboradores[i].proyectos.push(proyecto._id);
+					
+					auth.updateUserProjects(proyecto.colaboradores[i])
+						.error(function(error){
+							debugger;
+							$scope.error = error;
+							if(!$scope.error.message)
+								if($scope.error.indexOf("duplicate key") != -1)
+									$scope.error =
+										new Object({message:"El nombre de usuario ya esta registrado, favor de intentar con otro nombre de usuario."});
+						}).then(function(){
+							debugger;
+							$scope.error =
+								new Object({message:"Los colaboradores fueron agregados exitosamente."});
+						});
+				}
+			});;
+	};
 	
 	$scope.addProject = function(){
 		  if(!$scope.nombre || $scope.nombre === '' ||
@@ -1051,7 +1199,10 @@ app.factory('Message', ['$firebaseArray','$stateParams',
         
             console.log("data changed!");
             var objDiv = document.getElementById("foo");
-            objDiv.scrollTop = objDiv.scrollHeight;
+            
+            if(objDiv != null)
+            
+                objDiv.scrollTop = objDiv.scrollHeight;
         
         });
         
