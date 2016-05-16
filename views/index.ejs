@@ -494,17 +494,17 @@
 <script type="text/ng-template" id="/proyecto.html">
 	<div class="container col-md-12">
 		<div class="panel panel-default ">
+			
 			<div class="panel-heading">
 				
 				<div class="container-fluid">
-					<div class="row">
-							<div class=".col-md-6">
-								  <h2 class="h2" >{{project.nombre}} <small>{{project.descripcion}}</small></h2>
+					<div class="row ">
+							<div class="col-md-12" >
+								  <h2 style="display: inline">{{project.nombre}} <small>{{project.descripcion}}</small></h2>
+								  <button class="btn btn-success" style="margin-left:10vh" ng-click="addToTerminal()"><span class="glyphicon glyphicon-play" aria-hidden="true"></span>  Run</button>
+								  <button class="btn btn-default" ng-click="addToTerminal()"><span class="glyphicon glyphicon-indent-left" aria-hidden="true"></span>  Test</button>
+								  <button class="btn btn-warning" ng-click="addToTerminal()"><span class="glyphicon glyphicon-book" aria-hidden="true"></span>    Ejemplo</button>
 							</div>
-
-						  <div class=".col-md-6" >
-							  <button class="btn btn-success" style="display: inline" ng-click="addToTerminal()"><span class="glyphicon glyphicon-play" aria-hidden="true"></span>  Run</button>
-						 </div>
 
 					</div>
 				</div>
@@ -533,9 +533,9 @@
 															
 							</div>
 							
-							<div class="panel-body minH4">
+							<div class="panel-body minH">
                             
-                                <div class="minH5" style="overflow: scroll; width:100%">
+                                <div style="overflow: scroll; width:100%">
 								    <js-tree tree-data="scope" tree-model="treeModel" tree-events="ready:readyCB;changed:changedCB;open_node:openNodeCB"></js-tree>
                                 </div>
 							</div>
@@ -546,16 +546,15 @@
 						
 							<div class="panel panel-default">
 								
-								<div class="panel-body minH2">
+								<div class="panel-body">
 									<div id="firepad-container"></div>
 								</div>
 							</div>
 						
 							<div class="panel panel-default">
 								
-								<div class="panel-body minH3">
-									
-									<pre class="terminaljs" data-columns="93" data-rows="7" data-name="t1"></pre>
+								<div class="panel-body">
+									<pre style="width:100%" class="terminaljs" data-columns="93" data-rows="7" data-name="t1"></pre>
 									
 								</div>
 							</div>
@@ -566,27 +565,25 @@
 						<div class="panel panel-default">
 						
 							<div class="panel-heading">
-								Colaboradores
+								Chat
 							</div>
 
-                    <div class="panel-body minH4">
+                    <div class="panel-body minH">
                     
-							<div ng-model="change" ng-change="change()" id="foo" class="minH5" style="overflow: scroll;overflow-x: hidden; width:100%">
+						<div ng-model="change" ng-change="change()" id="foo" style="overflow: scroll;overflow-x: hidden; width:100%">
+
+						<div ng-repeat="message in messages" >
                              
-                    <div ng-repeat="message in messages" >
-                             
-                                <ul id="list" ng-model="change" ng-change="change()" class="chat">
+							<ul id="list" ng-model="change" ng-change="change()" class="chat">
                                 
-                        <li ng-if="message.user==user.username" >
+                        		<li ng-if="message.user==user.username" >
                         
-                            <div class="chat-body mess-user">
-
-                                <p>
-                                    {{message.text}}.
-                                </p>
-
-                            </div>
-                        </li>
+									<div class="chat-body mess-user">
+										<p>
+											{{message.text}}.
+										</p>
+									</div>
+                        		</li>
                         
                         <li ng-if="message.user!=user.username" >
                             <div class="chat-body mess-colab">
