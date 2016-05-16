@@ -420,47 +420,6 @@
 			</div>
             
             
-            <div class="page-header col-md-4 bgrdBrown" >
-					<h2>Colaboradores</h2>
-				</div>
-            
-            <form ng-submit="saveCollaborators()" class="">
-								<md-content class="md-padding autocomplete" layout="column">
-									<md-contact-chips ng-model="contacts" md-contacts="querySearch($query)" md-contact-name="username" md-contact-image="iconoAvatar" md-contact-email="correoElectronico" md-require-match="true" md-highlight-flags="i" filter-selected="filterSelected" placeholder="Escribe"> <!--ng-show="project.idUsuario == currentId()"-->
-									</md-contact-chips>
-
-									<md-list class="fixedRows" style="height:300px;">
-									  
-									  
-									  <md-list-item class="md-2-line contact-item selected" ng-repeat="(index, contact) in contacts">
-										<a ng-href="/#/usuario/{{contact._id}}" target="_blank">
-										<img ng-src="{{ contact.iconoAvatar }}" class="md-avatar" alt="{{contact.username}}">
-										</a>
-										<div class="md-list-item-text compact">
-										  <h3>{{contact.username}}</h3>
-										  <p>{{contact.correoElectronico}}</p>
-										</div>
-									  </md-list-item>
-									  
-									  <md-list-item class="md-2-line contact-item" ng-repeat="(index, contact) in allContacts" ng-if="contacts.indexOf(contact) < 0">
-										<a ng-href="/#/usuario/{{contact._id}}" target="_blank">
-										<img ng-src="{{ contact.iconoAvatar }}" class="md-avatar" alt="{{contact.username}}">
-										</a>
-										<div class="md-list-item-text compact">
-										  <h3>{{contact.username}}</h3>
-										  <p>{{contact.correoElectronico}}</p>
-										</div>
-									  </md-list-item>
-									  
-									</md-list>
-								</md-content>
-								
-								<md-button type="submit" class="md-raised md-primary">
-									Actualizar Colaboradores</md-button>
-								
-							</form>
-            
-            
             
 		</div>
             
