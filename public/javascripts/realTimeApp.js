@@ -636,7 +636,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
         
         if($scope.nameFile==undefined)
         {
-            alertify.delay(5000).error("Ingresa un nombre de documento");
+            alertify.delay(5000).error("Ingresa un nombre de documento.");
             return;
             
         }
@@ -655,7 +655,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
         
 		if($scope.nameFile==undefined)
         {
-            alertify.delay(5000).error("Ingresa un nombre de carpeta");
+            alertify.delay(5000).error("Ingresa un nombre de carpeta.");
             return;
             
         }
@@ -672,7 +672,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
         
         else
         {
-            alertify.delay(5000).error("No es posible generar una carpeta a partir de un archivo");
+            alertify.delay(5000).error("No es posible generar una carpeta a partir de un archivo.");
             
         }
 		
@@ -871,9 +871,10 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
     
 	$scope.send = function(newmessage)
     {
-        if(newmessage.text==null||newmessage==undefined)
+        if(newmessage==undefined)
             {
-                alert("Escribe algo tonto");
+                console.log("zsdfsdf");
+                alertify.delay(5000).error("El mensaje no puede estar vacío.");
                 return;
             }
         
@@ -1060,7 +1061,6 @@ app.factory('Message', ['$firebaseArray','$stateParams',
 				return messages.$add(message);
 			},
 			get: function (messageId) {
-                console.log("llega");
 				return $firebaseObject(ref.child('messages').child(messageId));
 			},
 			delete: function (message) {
