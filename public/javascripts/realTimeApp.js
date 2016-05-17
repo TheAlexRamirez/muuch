@@ -742,7 +742,6 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 		$scope.actualFile = data.node.text;
         
         $scope.parentroot = data.node.parent;
-        console.log($scope.parentroot);
         
 		if(data.node.original.type == 'file'){
 			
