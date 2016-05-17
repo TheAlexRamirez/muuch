@@ -672,7 +672,8 @@ app.controller('ProjectsCtrl', [
 '$http',
 'alertify',
 '$firebaseObject',
-function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http,alertify,$firebaseObject){
+'$interval',
+function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http,alertify,$firebaseObject,$interval){
 
 	$scope.iconos = [
 	{ url: 'ico-agenda'},
@@ -731,7 +732,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	}
 	
 	$scope.readyCB = function() {
-     // console.log('ready event call back');
+       // console.log('ready event call back');
 		$scope.preventNewDirectory = false;
     };
 	
@@ -744,22 +745,132 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
         console.log($scope.parentroot);
         
 		if(data.node.original.type == 'file'){
+			
 			$scope.actualIdDocument = data.node.id;
 			$scope.changePad($scope.actualIdDocument);
+			
 			$scope.parentId = data.node.parent;
 			$scope.preventNewDirectory = true;
 			console.log("No puedes crear carpetas desde aqui");
-		}else{
+			
+		}else{//The file selected is a directory
+			
 			$scope.parentId = data.node.id;	
             $scope.preventNewDirectory = false;
 		}
 		
 	};
+	
+	
 	$scope.openNodeCB = function(e, data) {
 		 // console.log('open-node event call back');	
 	};
+	
+	$scope.addTextToProgram = function(){
+		
+		var opc = ["AAAAAAAAAAAAAAAAAAAAAAAA","BBBBBBBBBBBBBBBBBBBBB","CCCCCCCCCCCCCCCCCCCCCCCCC"];
+		var sel = Math.floor((Math.random() * 2) + 0);
+		
+		$interval(function(){
+			editor.insert(opc[sel]);
+		},1000,5);
+	}
+	
+	$scope.clear = function(){
+		editor.setValue("");
+	}
+	
+	$scope.addTestProgram = function(){
+		var py= [".py"];
+		var isPy = (new RegExp('(' + py.join('|').replace(/\./g, '\\.') + ')$')).test($scope.actualFile);
 
-	$scope.updateTree();
+		var java = [".java"];
+		var isJava = (new RegExp('(' + java.join('|').replace(/\./g, '\\.') + ')$')).test($scope.actualFile);
+
+		var js = [".js"];
+		var isJS = (new RegExp('(' + js.join('|').replace(/\./g, '\\.') + ')$')).test($scope.actualFile);
+
+		var c = [".c"];
+		var isC = (new RegExp('(' + c.join('|').replace(/\./g, '\\.') + ')$')).test($scope.actualFile);
+
+		var cpp = [".cpp"];
+		var isCpp = (new RegExp('(' + cpp.join('|').replace(/\./g, '\\.') + ')$')).test($scope.actualFile);
+
+		if(isPy){
+			editor.setValue("");
+			var op = Math.floor((Math.random() * 2) + 0);
+			var r = new Firebase("https://muchwakun.firebaseio.com/TestPy"+op);
+			var o = $firebaseObject(r);
+			
+			o.$loaded()
+			  .then(function(data) {
+				editor.setValue(data.$value);
+			  })
+			  .catch(function(error) {
+				console.error("Error:", error);
+			  });
+			
+		} else if(isJava){
+			editor.setValue("");
+			var op = Math.floor((Math.random() * 2) + 0);
+			var r = new Firebase("https://muchwakun.firebaseio.com/TestJava"+op);
+			var o = $firebaseObject(r);
+			
+			o.$loaded()
+			  .then(function(data) {
+				editor.setValue(data.$value);
+			  })
+			  .catch(function(error) {
+				console.error("Error:", error);
+			  });
+		} else if(isJS){
+			editor.setValue("");
+			var op = Math.floor((Math.random() * 2) + 0);
+			var r = new Firebase("https://muchwakun.firebaseio.com/TestJS"+op);
+			var o = $firebaseObject(r);
+			
+			o.$loaded()
+			  .then(function(data) {
+				editor.setValue(data.$value);
+			  })
+			  .catch(function(error) {
+				console.error("Error:", error);
+			  });
+		} else if(isC){
+			editor.setValue("");
+			var op = Math.floor((Math.random() * 2) + 0);
+			console.log(op);
+			var r = new Firebase("https://muchwakun.firebaseio.com/TestC"+op);
+			var o = $firebaseObject(r);
+			
+			o.$loaded()
+			  .then(function(data) {
+				editor.setValue(data.$value);
+			  })
+			  .catch(function(error) {
+				console.error("Error:", error);
+			  });
+		} else if(isCpp){
+			editor.setValue("");
+			var op = Math.floor((Math.random() * 2) + 0);
+			var r = new Firebase("https://muchwakun.firebaseio.com/TestCpp"+op);
+			var o = $firebaseObject(r);
+			
+			o.$loaded()
+			  .then(function(data) {
+				editor.setValue(data.$value);
+			  })
+			  .catch(function(error) {
+				console.error("Error:", error);
+			  });
+		} 	
+	}
+
+	$interval(function(){
+		$scope.updateTree();
+		console.log("Update");
+	},2000);
+	
 	$scope.parentId = "#";
 	
 	
@@ -993,7 +1104,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	
 	//Create a terminal instance
 	var containers = document.getElementsByClassName('terminaljs'),
-	socket = io('http://192.168.100.4:3000/pty'), term, stream;
+	socket = io('http://192.168.1.156:3000/pty'), term, stream;
 	for(var i = 0; i < containers.length; i++) {
 
 		setTimeout(function(i) {

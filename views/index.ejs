@@ -504,8 +504,9 @@
 							<div class="col-md-12" >
 								  <h2 style="display: inline">{{project.nombre}} <small>{{project.descripcion}}</small></h2>
 								  <button class="btn btn-success" style="margin-left:10vh" ng-click="addToTerminal()"><span class="glyphicon glyphicon-play" aria-hidden="true"></span>  Run</button>
-								  <button class="btn btn-default" ng-click="addToTerminal()"><span class="glyphicon glyphicon-indent-left" aria-hidden="true"></span>  Test</button>
-								  <button class="btn btn-warning" ng-click="addToTerminal()"><span class="glyphicon glyphicon-book" aria-hidden="true"></span>    Ejemplo</button>
+								  <button class="btn btn-default" ng-click="addTextToProgram()"><span class="glyphicon glyphicon-indent-left" aria-hidden="true"></span>  Test</button>
+								  <button class="btn btn-warning" ng-click="addTestProgram()"><span class="glyphicon glyphicon-book" aria-hidden="true"></span>    Ejemplo</button>
+								  <button class="btn btn-danger" ng-click="clear()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>    Limpiar</button>
 							</div>
 
 					</div>
@@ -599,8 +600,8 @@
 							
 							<div class="panel-body minH">
                             
-                                <div style="overflow: scroll; width:100%">
-								    <js-tree tree-data="scope" tree-model="treeModel" tree-events="ready:readyCB;changed:changedCB;open_node:openNodeCB"></js-tree>
+                                <div style="overflow: hidden; width:100%">
+								    <js-tree tree-data="scope"  tree-model="treeModel" tree-events="ready:readyCB;changed:changedCB;open_node:openNodeCB"></js-tree>
                                 </div>
 							</div>
 						</div>
