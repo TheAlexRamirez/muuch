@@ -788,7 +788,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	//Adding a new File
 	$scope.addDocument= function(){
         
-        if($scope.nameFile==undefined)
+        if($scope.nameFile==undefined||$scope.nameFile=="")
         {
             alertify.delay(5000).error("Ingresa un nombre de documento.");
             return;
@@ -807,11 +807,10 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	//Adding a new Directory
 	$scope.addDirectory= function(){
         
-		if($scope.nameFile==undefined)
+		if($scope.nameFile==undefined||$scope.nameFile=="")
         {
             alertify.delay(5000).error("Ingresa un nombre de carpeta.");
             return;
-            
         }
 		
 		if(!$scope.preventNewDirectory){
@@ -830,6 +829,22 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
             
         }
 		
+	}
+	
+	//Change the name file or directory
+	$scope.changeName = function(){
+		
+		console.log($scope.newName);
+		
+		if($scope.newName==""||$scope.newName==undefined)
+		{
+			alertify.delay(5000).error("No ingresate ninǵun nombre.");
+            return;
+		}
+		
+		
+		
+		$scope.newName="";
 	}
 	
 	//Create a terminal instance
@@ -1058,18 +1073,26 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 
 
 	$scope.messages = Message.getAll($scope.project._id);
+	
 	$scope.send = function(newmessage)
     {
-        if(newmessage == undefined)
+		
+		
+		
+        if(newmessage == undefined||newmessage.text == null)
 		{
 			alertify.delay(5000).error("El mensaje no puede estar vacío.");
 			return;
 		}
+		
+		console.log("new", newmessage);
+		console.log("newme", newmessage.text);
         
         newmessage.user = $scope.user.username;
         newmessage.iduser = $scope.user._id;
         Message.create(newmessage);
-        newmessage.text = null;
+		newmessage.text = null;
+        newmessage = undefined;
         
 	};
 
