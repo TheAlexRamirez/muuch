@@ -758,6 +758,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 			
 			$scope.parentId = data.node.id;	
             $scope.preventNewDirectory = false;
+            $scope.actualIdDocument = data.node.id;
 		}
 		
 	};
@@ -994,7 +995,36 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
             return;
 		}
         
-        if($scope.validateName($scope.newName)){
+        if(!$scope.preventNewDirectory)
+        {
+            
+            var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id+'/'+$scope.actualIdDocument);
+            var obj = $firebaseObject(r);
+
+            obj.$loaded()
+              .then(function(data) {
+
+                console.log("data",$scope.newName); // true
+                data.name = $scope.newName;
+                //obj.
+                data.$save().then(function(ref) {
+
+                    console.log(r);
+                    $scope.updateTree();
+                    $scope.newName="";
+
+                }, function(error) {
+                  console.log("Error:", error);
+                });
+
+              })
+              .catch(function(error) {
+                console.error("Error:", error);
+              });
+    
+        }
+        
+        else if($scope.validateName($scope.newName)){
             
             var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id+'/'+$scope.actualIdDocument);
             var obj = $firebaseObject(r);
@@ -1078,6 +1108,33 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
             
             console.log("dir");
             
+            var re = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id);
+            var obj = $firebaseObject(re);
+            var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id);
+            $scope.list = $firebaseArray(r);
+            console.log($scope.actualIdDocument);
+            var id = $scope.actualIdDocument;
+            $scope.fordelete = [];
+            $scope.fordelete.push($scope.actualIdDocument);
+            
+            obj.$loaded()
+              .then(function(data) {
+                
+                $scope.deleterec(id,$scope.list);
+                console.log($scope.fordelete);
+                $scope.deletelist();
+
+              })
+            
+            
+            
+            
+        }
+        
+        else{
+            
+            console.log("file");
+            
             var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id+'/'+$scope.actualIdDocument);
             var obj = $firebaseObject(r);
             
@@ -1093,31 +1150,55 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
             
         }
         
-        else{
+    }
+    
+    //get elements to delete
+    $scope.deleterec = function(id,list){
+        
+        for(var i=0;i<list.length;i++){
             
-            console.log("file");
-            
-            var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id+'/'+$scope.actualIdDocument);
-            var obj = $firebaseObject(r);
-            
-            obj.$loaded()
-              .then(function(data) {
+            if(id==list[i].parent){
 
-                data.$remove().then(function(ref) {
+                if(list[i].type=="file"){
 
-                    console.log("archivo eliminado");
-                    $scope.updateTree();
+                    $scope.fordelete.push(list[i].$id);
+                    
+                } else{
 
-                }, function(error) {
-                  console.log("Error:", error);
-                });
+                    $scope.fordelete.push(list[i].$id);
+                    $scope.deleterec(list[i].$id,list);
+                    
+                }
+            }
 
-              })
-              .catch(function(error) {
-                console.error("Error:", error);
-              });
-            
         }
+                                    
+    }
+    
+    //delete list of elements
+    $scope.deletelist = function()
+    {
+        console.log("lsd",$scope.fordelete);
+        
+        for(var i=0; i<$scope.fordelete.length;i++){
+            
+            //console.log("id= ",$scope.fordelete[i]);
+            var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id+'/'+$scope.fordelete[i]);
+            var obj = $firebaseObject(r);
+
+            obj.$remove().then(function(ref) {
+              // data has been deleted locally and in the database
+
+                console.log("archivo eliminado");
+                
+
+            }, function(error) {
+              console.log("Error:", error);
+            });
+        
+        }
+        
+        $scope.updateTree();
         
     }
 	
