@@ -180,6 +180,7 @@ app.controller('UserCtrl', [
 '$http',
 function(post,$scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http){
 	$scope.user = post;
+	console.log(post);
 	
 }]);
 
@@ -313,7 +314,7 @@ function($scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$ht
 		proyecto = angular.copy($scope.project);
 		usuariosTotales = $scope.users;
 		proyecto.colaboradores = angular.copy($scope.contacts);
-		debugger;
+		
 		
 		proyecto.colaboradores.splice(0,0,auth.currentPayload());
 	
