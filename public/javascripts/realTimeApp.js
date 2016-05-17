@@ -671,7 +671,8 @@ app.controller('ProjectsCtrl', [
 '$firebaseArray',
 '$http',
 'alertify',
-function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http,alertify){
+'$firebaseObject',
+function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http,alertify,$firebaseObject){
 
 	$scope.iconos = [
 	{ url: 'ico-agenda'},
@@ -841,10 +842,36 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 			alertify.delay(5000).error("No ingresate ninǵun nombre.");
             return;
 		}
-		
-		
-		
-		$scope.newName="";
+        
+        
+        var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id+'/'+$scope.actualIdDocument);
+        
+        var obj = $firebaseObject(r);
+        
+        obj.$loaded()
+          .then(function(data) {
+            
+            console.log("data",$scope.newName); // true
+            data.name = $scope.newName;
+            //obj.
+            data.$save().then(function(ref) {
+                
+                console.log(r);
+                $scope.updateTree();
+		        $scope.newName="";
+
+            }, function(error) {
+              console.log("Error:", error);
+            });
+            
+          })
+          .catch(function(error) {
+            console.error("Error:", error);
+          });
+        
+        
+        
+        
 	}
 	
 	//Create a terminal instance

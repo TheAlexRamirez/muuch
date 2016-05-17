@@ -523,36 +523,71 @@
 							<div class="panel-heading">
                             
 								<!--Directorio-->
-								<button class="btn btn-primary" ng-click="addDocument()">
+                                
+								<button class="btn btn-default" data-toggle="modal" data-target="#addDocument">
                                     <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
                                 </button>
                                 
-                                <button class="btn btn-success" ng-click="addDirectory()">
+                                <button class="btn btn-default" data-toggle="modal" data-target="#addDirectory">
                                     <span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
                                 </button>
 								
-								<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#myModal">
-                                    <span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
+								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#edit">
+                                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                                 </button>
 								
 								<button class="btn btn-danger" ng-click="addDirectory()">
-                                    <span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
-                                </button>
-                                
-                                <input type="text" class="form-control" ng-model="nameFile" placeholder="Nombre de archivo ó carpeta">	
+                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                </button>	
 															
 							</div>
 							
 							
-							<!-- Modal -->
-							<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+							<!-- Modal addDocument-->
+							<div class="modal fade" id="addDocument" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 							  <div class="modal-dialog" role="document">
 								<div class="modal-content">
 								  <div class="modal-header">
-									<h4 class="modal-title" id="myModalLabel">Elige un nuevo nombre</h4>
+									<h4 class="modal-title">Nuevo Documento.</h4>
 								  </div>
 								  <div class="modal-body">
-								  	<input type="text" class="form-control" ng-model="newName" placeholder="Nuevo nombre de archivo">
+								  	<input type="text" class="form-control" ng-model="nameFile" placeholder="Nombre del documento">
+								  </div>
+								  <div class="modal-footer">
+									<button type="button" class="btn btn-primary" ng-click="addDocument()" data-dismiss="modal">Crear</button>
+								  </div>
+								</div>
+							  </div>
+							</div>
+							<!-- Modal addDocument-->
+                            
+                            <!-- Modal addDirectory-->
+							<div class="modal fade" id="addDirectory" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+							  <div class="modal-dialog" role="document">
+								<div class="modal-content">
+								  <div class="modal-header">
+									<h4 class="modal-title">Nuevo Directorio.</h4>
+								  </div>
+								  <div class="modal-body">
+								  	<input type="text" class="form-control" ng-model="nameFile" placeholder="Nombre del directorio">
+								  </div>
+								  <div class="modal-footer">
+									<button type="button" class="btn btn-primary" ng-click="addDirectory()" data-dismiss="modal">Crear</button>
+								  </div>
+								</div>
+							  </div>
+							</div>
+							<!-- Modal ddDirectory-->
+                            
+                            <!-- Modal modify-->
+							<div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+							  <div class="modal-dialog" role="document">
+								<div class="modal-content">
+								  <div class="modal-header">
+									<h4 class="modal-title" id="myModalLabel">Editar nombre</h4>
+								  </div>
+								  <div class="modal-body">
+								  	<input type="text" class="form-control" ng-model="newName" placeholder="Nuevo nombre">
 								  </div>
 								  <div class="modal-footer">
 									<button type="button" class="btn btn-primary" ng-click="changeName()" data-dismiss="modal">Save changes</button>
@@ -599,7 +634,7 @@
 
                     <div class="panel-body">
                     
-						<div ng-model="change" ng-change="change()" id="foo" style="overflow: scroll;overflow-x: hidden; width:100%" class="minH5">
+						<div ng-model="change" id="foo" style="overflow: scroll;overflow-x: hidden; width:100%" class="minH5">
 
 						<div ng-repeat="message in messages" >
                              
