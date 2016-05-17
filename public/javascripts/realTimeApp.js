@@ -739,11 +739,11 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 
 	$scope.changedCB = function(e, data) {
 		//  console.log('changed event call back');
-		//console.log(data);
-		
 		$scope.actualFile = data.node.text;
-		
-		
+        
+        $scope.parentroot = data.node.parent;
+        console.log($scope.parentroot);
+        
 		if(data.node.original.type == 'file'){
 			
 			$scope.actualIdDocument = data.node.id;
@@ -756,9 +756,9 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 		}else{//The file selected is a directory
 			
 			$scope.parentId = data.node.id;	
+            $scope.preventNewDirectory = false;
 		}
 		
-		//console.log("padre cambiado a ",$scope.parentId);
 	};
 	
 	
@@ -907,13 +907,23 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
             
         }
         
-		$scope.fireProject.$add({
-			name : $scope.nameFile,
-			type : "file",
-			parent : $scope.parentId
-		});
-		$scope.nameFile = "";
-		$scope.updateTree();
+        if($scope.validateName($scope.nameFile))
+        {
+            $scope.fireProject.$add({
+                name : $scope.nameFile,
+                type : "file",
+                parent : $scope.parentId
+            });
+            $scope.nameFile = "";
+            $scope.updateTree();
+        }
+        
+        else{
+            
+            alertify.delay(5000).error("Ingresa un nombre de documento válido.");
+            return;
+        }
+        
 	}
 
 	//Adding a new Directory
@@ -925,7 +935,20 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
             return;
         }
 		
-		if(!$scope.preventNewDirectory){
+        if($scope.parentroot == "#" && $scope.preventNewDirectory)
+        {
+            
+            $scope.fireProject.$add({
+			name : $scope.nameFile,
+			type : "directory",
+			parent : $scope.parentroot
+			});
+			$scope.nameFile = "";
+			$scope.updateTree();
+            
+        }
+        
+		else if(!$scope.preventNewDirectory){
 			$scope.fireProject.$add({
 			name : $scope.nameFile,
 			type : "directory",
@@ -946,44 +969,138 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	//Change the name file or directory
 	$scope.changeName = function(){
 		
-		console.log($scope.newName);
-		
 		if($scope.newName==""||$scope.newName==undefined)
 		{
 			alertify.delay(5000).error("No ingresate ninǵun nombre.");
             return;
 		}
         
-        
-        var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id+'/'+$scope.actualIdDocument);
-        
-        var obj = $firebaseObject(r);
-        
-        obj.$loaded()
-          .then(function(data) {
+        if($scope.validateName($scope.newName)){
             
-            console.log("data",$scope.newName); // true
-            data.name = $scope.newName;
-            //obj.
-            data.$save().then(function(ref) {
-                
-                console.log(r);
-                $scope.updateTree();
-		        $scope.newName="";
+            var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id+'/'+$scope.actualIdDocument);
+            var obj = $firebaseObject(r);
 
+            obj.$loaded()
+              .then(function(data) {
+
+                console.log("data",$scope.newName); // true
+                data.name = $scope.newName;
+                //obj.
+                data.$save().then(function(ref) {
+
+                    console.log(r);
+                    $scope.updateTree();
+                    $scope.newName="";
+
+                }, function(error) {
+                  console.log("Error:", error);
+                });
+
+              })
+              .catch(function(error) {
+                console.error("Error:", error);
+              });
+        }
+        
+        else{
+            
+            alertify.delay(5000).error("Ingresa un nombre de documento válido.");
+            return;
+        }
+        
+	}
+    
+    //Validate files name
+    $scope.validateName = function(name){
+        
+        var py= [".py"];
+        var isPy = (new RegExp('(' + py.join('|').replace(/\./g, '\\.') + ')$')).test(name);
+
+        var java = [".java"];
+        var isJava = (new RegExp('(' + java.join('|').replace(/\./g, '\\.') + ')$')).test(name);
+
+        var js = [".js"];
+        var isJS = (new RegExp('(' + js.join('|').replace(/\./g, '\\.') + ')$')).test(name);
+
+        var c = [".c"];
+        var isC = (new RegExp('(' + c.join('|').replace(/\./g, '\\.') + ')$')).test(name);
+
+        var cpp = [".cpp"];
+        var isCpp = (new RegExp('(' + cpp.join('|').replace(/\./g, '\\.') + ')$')).test(name);
+
+        if(isPy){
+            // Send stream and options to the server
+            return true;
+        } else if(isJava){
+            // Send stream and options to the server
+            return true;
+        } else if(isJS){
+            // Send stream and options to the server
+            return true;
+        } else if(isC){
+            // Send stream and options to the server
+            return true;
+        } else if(isCpp){
+            // Send stream and options to the server
+            return true;
+        } else{
+
+            return false;
+        }
+            
+    }
+    
+    //Delete file or directory
+    $scope.delete = function(){
+        
+        console.log($scope.preventNewDirectory);
+        
+        if(!$scope.preventNewDirectory){
+            
+            console.log("dir");
+            
+            var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id+'/'+$scope.actualIdDocument);
+            var obj = $firebaseObject(r);
+            
+            obj.$remove().then(function(ref) {
+              // data has been deleted locally and in the database
+                
+                console.log("archivo eliminado");
+                $scope.updateTree();
+                
             }, function(error) {
               console.log("Error:", error);
             });
             
-          })
-          .catch(function(error) {
-            console.error("Error:", error);
-          });
+        }
         
+        else{
+            
+            console.log("file");
+            
+            var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id+'/'+$scope.actualIdDocument);
+            var obj = $firebaseObject(r);
+            
+            obj.$loaded()
+              .then(function(data) {
+
+                data.$remove().then(function(ref) {
+
+                    console.log("archivo eliminado");
+                    $scope.updateTree();
+
+                }, function(error) {
+                  console.log("Error:", error);
+                });
+
+              })
+              .catch(function(error) {
+                console.error("Error:", error);
+              });
+            
+        }
         
-        
-        
-	}
+    }
 	
 	//Create a terminal instance
 	var containers = document.getElementsByClassName('terminaljs'),
@@ -1212,6 +1329,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 
 	$scope.messages = Message.getAll($scope.project._id);
 	
+    //Send chat message
 	$scope.send = function(newmessage)
     {
 		
