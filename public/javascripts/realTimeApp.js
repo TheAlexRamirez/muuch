@@ -741,8 +741,9 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 		//  console.log('changed event call back');
 		$scope.actualFile = data.node.text;
         
+		$scope.fileSelected = data;
         $scope.parentroot = data.node.parent;
-        console.log($scope.parentroot);
+        
         
 		if(data.node.original.type == 'file'){
 			
@@ -778,6 +779,25 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	
 	$scope.clear = function(){
 		editor.setValue("");
+	}
+	
+	$scope.saveFile = function(){
+		
+		if($scope.fileSelected.node.original.type == "file"){
+	
+		  var text = editor.getValue();
+		  var name = $scope.fileSelected.node.text;
+		  var type ="text/plain";
+		
+		  var a = document.createElement("a");
+		  var file = new Blob([text], {type: type});
+		  a.href = URL.createObjectURL(file);
+		  a.download = name;
+			a.click();
+
+		}else{
+			alertify.delay(3000).error("Opta por descargar el proyecto.");
+		}
 	}
 	
 	$scope.addTestProgram = function(){
@@ -868,7 +888,6 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 
 	$interval(function(){
 		$scope.updateTree();
-		console.log("Update");
 	},2000);
 	
 	$scope.parentId = "#";
