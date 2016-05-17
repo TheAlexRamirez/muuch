@@ -745,17 +745,23 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 		
 		
 		if(data.node.original.type == 'file'){
+			
 			$scope.actualIdDocument = data.node.id;
 			$scope.changePad($scope.actualIdDocument);
+			
 			$scope.parentId = data.node.parent;
 			$scope.preventNewDirectory = true;
 			console.log("No puedes crear carpetas desde aqui");
-		}else{
+			
+		}else{//The file selected is a directory
+			
 			$scope.parentId = data.node.id;	
 		}
 		
 		//console.log("padre cambiado a ",$scope.parentId);
 	};
+	
+	
 	$scope.openNodeCB = function(e, data) {
 		 // console.log('open-node event call back');	
 	};
@@ -860,7 +866,11 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 		} 	
 	}
 
-	$scope.updateTree();
+	$interval(function(){
+		$scope.updateTree();
+		console.log("Update");
+	},2000);
+	
 	$scope.parentId = "#";
 	
 	
