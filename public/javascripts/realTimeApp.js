@@ -429,7 +429,7 @@ function(post,$scope, $stateParams, projects, $state, auth,Message,$firebaseArra
 		$scope.colaboradores =  $scope.project.colaboradores;
 		for(i=0; i< $scope.project.colaboradores.length; i++){
 			for(j=0; j< $scope.users.length; j++){
-				if($scope.project.colaboradores[i] == $scope.users[j]._id)
+				if($scope.project.colaboradores[i]._id == $scope.users[j]._id)
 					colaboradores.push($scope.users[j]);
 			}
 		}
@@ -929,8 +929,8 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 
 	
 	$scope.user = auth.currentPayload();
-    $scope.messages= Message.all;
-
+    
+	
     
    /* var obj = $firebaseObject(ref);
     var unwatch = obj.$watch(function() {
@@ -955,7 +955,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 		
 		for(i=0; i< $scope.project.colaboradores.length; i++){
 			for(j=0; j< $scope.users.length; j++){
-				if($scope.project.colaboradores[i] == $scope.users[j]._id)
+				if($scope.project.colaboradores[i]._id == $scope.users[j]._id)
 					colaboradores.push($scope.users[j]);
 			}
 		}
@@ -1056,15 +1056,15 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 		  $scope._id = null;
 	};
 
-    
+
+	$scope.messages = Message.getAll($scope.project._id);
 	$scope.send = function(newmessage)
     {
-        if(newmessage==undefined)
-            {
-                console.log("zsdfsdf");
-                alertify.delay(5000).error("El mensaje no puede estar vacío.");
-                return;
-            }
+        if(newmessage == undefined)
+		{
+			alertify.delay(5000).error("El mensaje no puede estar vacío.");
+			return;
+		}
         
         newmessage.user = $scope.user.username;
         newmessage.iduser = $scope.user._id;
@@ -1072,15 +1072,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
         newmessage.text = null;
         
 	};
-    
-    $scope.change = function()
-    {
-        
-        console.log("cambio");
-        var objDiv = document.getElementById("foo");
-        objDiv.scrollTop = objDiv.scrollHeight;
-        
-    }
+
 	
 }]);
 
@@ -1232,24 +1224,31 @@ app.factory('auth', ['$http', '$window', function($http, $window){
 
 app.factory('Message', ['$firebaseArray','$stateParams',
 	function($firebaseArray,$stateParams) {
-		var ref = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id+'/messages');
-		var messages = $firebaseArray(ref);
+		
+		var ref = "";
+        var messages = {};
         
-        var unwatch = messages.$watch(function() {
-        
-            console.log("data changed!");
-            var objDiv = document.getElementById("foo");
-            
-            if(objDiv != null)
-            
-                objDiv.scrollTop = objDiv.scrollHeight;
-        
-        });
+		
         
 		var Message = {
-			all: messages,
+			getAll: function(idproyecto){
+				ref = new Firebase('https://muchwakun.firebaseio.com/'+idproyecto+'/messages');
+				console.log(ref);
+				messages = $firebaseArray(ref);
+				messages.$watch(function() {
+        
+					console.log("data changed!");
+					var objDiv = document.getElementById("foo");
+
+					if(objDiv != null)
+						objDiv.scrollTop = objDiv.scrollHeight;
+
+				});
+				
+				return messages;
+			},
 			create: function (message) {
-				return messages.$add(message);
+				messages.$add(message);
 			},
 			get: function (messageId) {
 				return $firebaseObject(ref.child('messages').child(messageId));
