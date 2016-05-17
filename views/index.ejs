@@ -604,6 +604,16 @@
 								    <js-tree tree-data="scope"  tree-model="treeModel" tree-events="ready:readyCB;changed:changedCB;open_node:openNodeCB"></js-tree>
                                 </div>
 							</div>
+							
+							<div class="panel-footer">
+								<button type="button" class="btn btn-default" ng-click="saveFile()">
+                                    	<span class="glyphicon glyphicon-arrow-down" aria-hidden="true"> Archivo</span>
+                                	</button>
+								<button class="btn btn-primary" ng-click="addDirectory()">
+                                    <span class="glyphicon glyphicon-arrow-down" aria-hidden="true">  Proyecto</span>
+                                </button>	
+															
+							</div>
 						</div>
 					</div>
 					
