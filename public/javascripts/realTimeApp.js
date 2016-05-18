@@ -687,7 +687,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	{ url: 'ico-file'},
 	{ url: 'ico-folder'}];
 	
-	
+	$scope.editing = new Boolean();
 	$scope.project = post;
 	
 	
@@ -1098,10 +1098,85 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
             
     }
     
+    //Validate editing
+    $scope.isediting = function(){
+        
+        var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id);
+        $scope.listediting = $firebaseArray(r);
+        
+        $scope.listediting.$loaded()
+              .then(function(data) {
+            
+            for(var i=0;i<data.length;i++){
+                
+                if(data[i].users){
+                    
+                    var newr = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id+'/'+data[i].$id+'/users');
+                    var users = $firebaseArray(newr);
+                    
+                    users.$loaded(
+                      function(x) {
+                        
+                          for(var i=0;i<x.length;i++){
+                              
+                              if(x[i].cursor){
+                                  alert("hay alguien aiuddaaaaaa");
+                              }
+                          }
+                          
+                      }, function(error) {
+                        console.error("Error:", error);
+                      });
+                    
+                }
+                   
+            }
+                
+        })
+        .catch(function(error) {
+            console.error("Error:", error);
+        });
+        
+    }
+    
+    //isediting file
+    $scope.iseditingfile = function(){
+        
+        var newr = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id+'/'+$scope.actualIdDocument+'/users');
+        var users = $firebaseArray(newr);
+
+        users.$loaded(
+          function(x) {
+              
+            var flagf = 0;
+            console.log("enter function");
+            for(var i=0;i<x.length;i++){
+
+                if(x[i].cursor){
+                alert("hay alguien aiuddaaaaaa");
+                flagf++;
+                }
+            }
+
+            if(flag!=0)
+            {
+                $scope.editing = true;
+                console.log("edirting");
+
+            }else{
+
+                $scope.editing = false;
+                console.log("edirtingno");
+            }
+
+          }, function(error) {
+            console.error("Error:", error);
+          });
+        
+    }
+    
     //Delete file or directory
     $scope.delete = function(){
-        
-        console.log($scope.preventNewDirectory);
         
         if(!$scope.preventNewDirectory){
             
@@ -1111,41 +1186,52 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
             var obj = $firebaseObject(re);
             var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id);
             $scope.list = $firebaseArray(r);
-            console.log($scope.actualIdDocument);
             var id = $scope.actualIdDocument;
             $scope.fordelete = [];
             $scope.fordelete.push($scope.actualIdDocument);
+            
+            console.log("list",$scope.list);
             
             obj.$loaded()
               .then(function(data) {
                 
                 $scope.deleterec(id,$scope.list);
-                console.log($scope.fordelete);
                 $scope.deletelist();
 
               })
-            
-            
-            
             
         }
         
         else{
             
-            console.log("file");
+            $scope.iseditingfile();
+            //console.log($scope.iseditingfile());
+            console.log("flag",$scope.editing);
             
-            var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id+'/'+$scope.actualIdDocument);
-            var obj = $firebaseObject(r);
+            if($scope.editing)
+            {
+                
+                console.log("entraval");
+                return;
+                
+            }
             
-            obj.$remove().then(function(ref) {
-              // data has been deleted locally and in the database
+            else{
                 
-                console.log("archivo eliminado");
-                $scope.updateTree();
+                console.log("file");
+
+                var r = new Firebase('https://muchwakun.firebaseio.com/'+$scope.project._id+'/'+$scope.actualIdDocument);
+                var obj = $firebaseObject(r);
+
+                obj.$remove().then(function(ref) {
+                  // data has been deleted locally and in the database
+                    $scope.updateTree();
+
+                }, function(error) {
+                  console.log("Error:", error);
+                });
                 
-            }, function(error) {
-              console.log("Error:", error);
-            });
+            }
             
         }
         
@@ -1177,7 +1263,6 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
     //delete list of elements
     $scope.deletelist = function()
     {
-        console.log("lsd",$scope.fordelete);
         
         for(var i=0; i<$scope.fordelete.length;i++){
             
