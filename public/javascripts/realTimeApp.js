@@ -36,7 +36,7 @@ function($stateProvider, $urlRouterProvider) {
 		  controller: 'UsersCtrl',
 		  resolve: {
 			users: ['$stateParams', 'projects', function($stateParams, projects) {
-				if(projects.users.length==0)
+				
 					return projects.getUsers();
 			}]
 		  }
@@ -213,7 +213,7 @@ app.controller('UsersCtrl', [
 '$http',
 function(users,$scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http){
 	
-	$scope.allContacts = projects.users;
+	$scope.allContacts = users.data;
 	
 }]);
 
