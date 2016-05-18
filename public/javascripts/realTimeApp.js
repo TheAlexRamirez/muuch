@@ -180,6 +180,7 @@ app.controller('UserCtrl', [
 '$http',
 function(post,$scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http){
 	$scope.user = post;
+	console.log(post);
 	
 }]);
 
@@ -313,7 +314,7 @@ function($scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$ht
 		proyecto = angular.copy($scope.project);
 		usuariosTotales = $scope.users;
 		proyecto.colaboradores = angular.copy($scope.contacts);
-		debugger;
+		
 		
 		proyecto.colaboradores.splice(0,0,auth.currentPayload());
 	
@@ -1288,7 +1289,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	
 	//Create a terminal instance
 	var containers = document.getElementsByClassName('terminaljs'),
-	socket = io('http://192.168.1.156:3000/pty'), term, stream;
+	socket = io('http://192.168.100.4:3000/pty'), term, stream;
 	for(var i = 0; i < containers.length; i++) {
 
 		setTimeout(function(i) {
