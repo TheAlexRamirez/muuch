@@ -198,62 +198,7 @@ app.controller('UsersCtrl', [
 '$http',
 function(users,$scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http){
 	
-	
-	projects.getUsers();
-	//console.log(projects.users);
-	$scope.contacts = projects.users;
-	
-	
-	var cachedQuery, lastSearch, pendingSearch, cancelSearch = angular.noop;
-	
-	$scope.loadContacts = function(){
-		return $scope.contacts;
-	}
-	
-	var colaboradores = [];
-	
-	if($scope.project){
-		$scope._id = $stateParams.id;
-		$scope.nombre = $scope.project.nombre;
-		$scope.descripcion = $scope.project.descripcion;
-		$scope.icono = $scope.project.icono;
-		$scope.privado = $scope.project.privado + "";
-		$scope.colaboradores =  $scope.project.colaboradores;
-		
-		for(i=0; i< $scope.project.colaboradores.length; i++){
-			for(j=0; j< $scope.users.length; j++){
-				if($scope.project.colaboradores[i] == $scope.users[j]._id)
-					colaboradores.push($scope.users[j]);
-			}
-		}
-	}
-	
-	$scope.allContacts = $scope.loadContacts();
-	$scope.contacts = colaboradores;
-	
-	$scope.filterSelected = false;
-	$scope.querySearch = function(criteria){
-		cachedQuery = criteria;
-      return cachedQuery ? $scope.allContacts.filter(createFilterFor(cachedQuery)) : [];
-	}
-	
-	function createFilterFor(query) {
-      var lowercaseQuery = angular.lowercase(query);
-
-      return function filterFn(contact) {
-        return (contact.username.toLowerCase().indexOf(lowercaseQuery) != -1);
-      };
-
-    }
-	
-	if($scope.user)
-		$scope.user.colaboradorIndependiente = $scope.user.nombreInstitucion == 'Colaborador Independiente';
-    
-	
-	
-	$scope.getUsers = function(){
-		projects.getUsers();
-	}
+	$scope.allContacts = projects.users;
 	
 }]);
 
@@ -446,29 +391,10 @@ function(post,$scope, $stateParams, projects, $state, auth,Message,$firebaseArra
 	$scope.loadContacts = function(){
 		return $scope.contacts;
 	}
-	/*
-	
-	
-	if($scope.project){
-		$scope._id = $stateParams.id;
-		$scope.nombre = $scope.project.nombre;
-		$scope.descripcion = $scope.project.descripcion;
-		$scope.icono = $scope.project.icono;
-		$scope.privado = $scope.project.privado + "";
-		$scope.colaboradores =  $scope.project.colaboradores;
-		
-		for(i=0; i< $scope.project.colaboradores.length; i++){
-			for(j=0; j< $scope.users.length; j++){
-				if($scope.project.colaboradores[i] == $scope.users[j]._id)
-					colaboradores.push($scope.users[j]);
-			}
-		}
-	}
-	*/
     
     console.log("colab",colaboradores);
     
-	$scope.allContacts = $scope.loadContacts();
+	//$scope.allContacts = $scope.loadContacts();
 	$scope.contacts = colaboradores;
 	
 	$scope.filterSelected = false;
@@ -1289,7 +1215,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	
 	//Create a terminal instance
 	var containers = document.getElementsByClassName('terminaljs'),
-	socket = io('http://192.168.100.4:3000/pty'), term, stream;
+	socket = io('http://192.168.100.18:3000/pty'), term, stream;
 	for(var i = 0; i < containers.length; i++) {
 
 		setTimeout(function(i) {
@@ -1384,15 +1310,6 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 
 	
 	$scope.user = auth.currentPayload();
-    
-	
-    
-   /* var obj = $firebaseObject(ref);
-    var unwatch = obj.$watch(function() {
-      console.log("data changed!");
-    });*/
-    
-   
     
 	if($scope.user)
 		$scope.user.colaboradorIndependiente = $scope.user.nombreInstitucion == 'Colaborador Independiente';

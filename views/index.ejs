@@ -253,17 +253,7 @@
 			<md-list class="fixedRows" style="height:300px;">
 			  <md-subheader class="md-no-sticky">Usuarios</md-subheader>
 			  
-			  <md-list-item class="md-2-line contact-item selected" ng-repeat="(index, contact) in contacts">
-				<a ng-href="/#/usuario/{{contact._id}}">
-				<img ng-src="{{ contact.iconoAvatar }}" class="md-avatar" alt="{{contact.username}}">
-				</a>
-				<div class="md-list-item-text compact">
-				  <h3>{{contact.username}}</h3>
-				  <p>{{contact.correoElectronico}}</p>
-				</div>
-			  </md-list-item>
-			  
-			  <md-list-item class="md-2-line contact-item" ng-repeat="(index, contact) in allContacts" ng-if="contacts.indexOf(contact) < 0">
+			  <md-list-item class="md-2-line contact-item" ng-repeat="contact in allContacts" >
 				<a ng-href="/#/usuario/{{contact._id}}">
 				<img ng-src="{{ contact.iconoAvatar }}" 
 					class="md-avatar" 
