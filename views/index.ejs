@@ -52,7 +52,7 @@
 			  </li>
 
 			  <li ng-show="isLoggedIn()">
-				<md-button class="md-primary whiteText" ng-href="/#/register/{{currentUser()}}">{{ currentUser() }}</md-button>
+				<md-button class="md-primary whiteText" ng-href="/#/usuario/{{currentId()}}">{{ currentUser() }}</md-button>
 			  </li>
 
 			  <li ng-show="isLoggedIn()">
@@ -65,7 +65,7 @@
 				<md-button class="md-primary whiteText" ng-href="/#/register">Registro</md-button>
 			  </li>
 			  <li ng-show="isLoggedIn()">
-				<a ng-href="/#/usuario/{{currentId()}}" class="aBoton">
+				<a  ng-href="/#/register/{{currentUser()}}" class="aBoton">
 				<img src="../images/{{ currentAvatar() }}.png" width="55" />
 				</a>
 			  </li>
