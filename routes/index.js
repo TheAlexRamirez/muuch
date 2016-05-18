@@ -115,7 +115,7 @@ router.get('/allProjects', auth, function(req, res, next) {
 });
 
 router.get('/projects', auth, function(req, res, next) {
-  Project.find({ idUsuario: new ObjectId(req.payload._id) },
+  Project.find(
 	  function(err, projects){
 		if(err){ return next(err); }
 

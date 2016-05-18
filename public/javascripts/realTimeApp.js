@@ -46,9 +46,9 @@ function($stateProvider, $urlRouterProvider) {
 		.state('proyectos-publicos', {
 		  url: '/proyectos-publicos',
 		  templateUrl: '/proyectos-publicos.html',
-		  controller: 'MainCtrl',
+		  controller: 'PublicCtrl',
 		  resolve: {
-			postPromise: ['projects', function(projects){
+			post: ['projects', function(projects){
 			  return projects.getAllPublic();
 			}]
 		  }
@@ -60,10 +60,7 @@ function($stateProvider, $urlRouterProvider) {
 		  templateUrl: '/proyectos.html',
 		  controller: 'MainCtrl',
 		  resolve: {
-			postPromise: ['projects', function(projects){
-				debugger;
-				if(projects.users.length==0)
-					projects.getUsers();
+			post: ['projects', function(projects){
 				return projects.getAll();
 			}]
 		  }
@@ -184,6 +181,24 @@ function(post,$scope, $stateParams, projects, $state, auth,Message,$firebaseArra
 	
 }]);
 
+//Controller for p[ublic projects]
+app.controller('PublicCtrl', [
+'post',
+'$scope',
+'$stateParams',
+'projects',
+'$state',
+'auth',
+'Message',
+'$firebaseArray',
+'$http',
+function(post,$scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http){
+	
+    $scope.projects = post.data;
+	
+	
+}]);
+
 //Controller for /users
 app.controller('UsersCtrl', [
 
@@ -271,7 +286,7 @@ function($scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$ht
 						new Object({message:"El nombre del proyecto ya esta registrado, favor de intentar con otro nombre de proyecto."});
 			
 			}).then(function(){
-			  debugger;
+			 
 				for(i=0; i < proyecto.colaboradores.length; i++){
 					
 					if(proyecto.colaboradores[i].proyectos.indexOf(proyecto._id) == -1) 
@@ -279,14 +294,14 @@ function($scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$ht
 					
 					auth.updateUserProjects(proyecto.colaboradores[i])
 						.error(function(error){
-							debugger;
+						
 							$scope.error = error;
 							if(!$scope.error.message)
 								if($scope.error.indexOf("duplicate key") != -1)
 									$scope.error =
 										new Object({message:"El nombre de usuario ya esta registrado, favor de intentar con otro nombre de usuario."});
 						}).then(function(){
-							debugger;
+							
 							$scope.error =
 								new Object({message:"Los colaboradores fueron agregados exitosamente."});
 						});
@@ -440,7 +455,7 @@ function(post,$scope, $stateParams, projects, $state, auth,Message,$firebaseArra
 						new Object({message:"El nombre del proyecto ya esta registrado, favor de intentar con otro nombre de proyecto."});
 			
 			}).then(function(){
-			  debugger;
+			  
 				for(i=0; i < proyecto.colaboradores.length; i++){
 					
 					if(proyecto.colaboradores[i].proyectos.indexOf(proyecto._id) == -1) 
@@ -448,14 +463,14 @@ function(post,$scope, $stateParams, projects, $state, auth,Message,$firebaseArra
 					
 					auth.updateUserProjects(proyecto.colaboradores[i])
 						.error(function(error){
-							debugger;
+							
 							$scope.error = error;
 							if(!$scope.error.message)
 								if($scope.error.indexOf("duplicate key") != -1)
 									$scope.error =
 										new Object({message:"El nombre de usuario ya esta registrado, favor de intentar con otro nombre de usuario."});
 						}).then(function(){
-							debugger;
+							
 							$scope.error =
 								new Object({message:"Los colaboradores fueron agregados exitosamente."});
 						});
@@ -531,11 +546,23 @@ app.controller('MainCtrl', [
 '$state',
 'auth',
 'projects',
-function($scope, $state, auth, projects){
-  $scope.projects = projects.projects;
-  debugger;
-  if($state.current.name == "home")
+'post',
+function($scope, $state, auth, projects,post){
+   
+    console.log(post.data);
+    $scope.projects = [];
+    $scope.Allprojects = post.data;
+   /*post.success(function(data){
+       $scope.Allprojects = data;
+       console.log('all projects',$scope.Allprojects);
+   });*/
+  
+  
+   if($state.current.name == "home")
 	projects.users = [];
+    
+    $scope.user = auth.currentPayload();
+     console.log('actual user',$scope.user);
   
   $scope.myInterval = 3000;
   $scope.slides = [
@@ -556,7 +583,19 @@ function($scope, $state, auth, projects){
 	  text: 'Las tecnologías de colaboración podrían ayudar a los programadores a trabajar juntos mientras corrigen errores o discuten el programa en un mismo entorno único pero en diferentes áreas geográficas. Por lo tanto, es necesario hacer una aplicación que pueda mejorar el rendimiento en la etapa de desarrollo y ofrecer soluciones como la colaboración en tiempo real.'
     }
   ];
-
+    
+    
+    //get all projects that this user is collaborator
+    for(var i =0; i < $scope.Allprojects.length;i++){
+        for(var j =0; j < $scope.Allprojects[i].colaboradores.length;j++){
+            if($scope.Allprojects[i].colaboradores[j] == $scope.user._id)
+                {
+                    console.log('este usuario es colaborador de ',$scope.Allprojects[i]);    
+                    $scope.projects.push($scope.Allprojects[i]);
+                }
+                
+        }
+    }
   
 	
 	$scope.deleteProject = function(id){
@@ -578,12 +617,7 @@ function($scope, $state, auth, projects){
 	  });; 
 	};
 	
-	$scope.viewUser = function(id){
-		projects.getUser(id).then(function(){
-		  
-		  
-	  });
-	}
+
   
 }])
 
@@ -600,7 +634,8 @@ app.controller('ProjectsCtrl', [
 'alertify',
 '$firebaseObject',
 '$interval',
-function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http,alertify,$firebaseObject,$interval){
+'alertify',
+function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http,alertify,$firebaseObject,$interval,alertify){
 
 	$scope.iconos = [
 	{ url: 'ico-agenda'},
@@ -614,10 +649,121 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	{ url: 'ico-file'},
 	{ url: 'ico-folder'}];
 	
+    
+     ///////////////////////////////
+	
+    $scope.users = {};
+    $scope.project = post;
+    $scope.allContacts = [];
+    
+      
+	projects.getUsers().success(function(data){
+        //$scope.users
+        $scope.users = data;
+        
+        
+        var colaboradores = $scope.project.colaboradores;
+        $scope.contacts = colaboradores;
+        
+        $scope.allContacts = $scope.users;
+        
+        
+        
+    });
+    
+    
+    
+	
+	$scope.user = projects.user;
+	if($scope.user)
+		$scope.user.colaboradorIndependiente = $scope.user.nombreInstitucion == 'Colaborador Independiente';
+	
+	
+	
+	/*if($scope.project){
+		$scope._id = $stateParams.id;
+		$scope.nombre = $scope.project.nombre;
+		$scope.descripcion = $scope.project.descripcion;
+		$scope.icono = $scope.project.icono;
+		$scope.privado = $scope.project.privado + "";
+		$scope.colaboradores =  $scope.project.colaboradores;
+		
+		for(i=0; i< $scope.project.colaboradores.length; i++){
+			for(j=0; j< $scope.users.length; j++){
+				if($scope.project.colaboradores[i] == $scope.users[j]._id)
+					colaboradores.push($scope.users[j]);
+			}
+		}
+	}*/
+	 
+    //allcontactes = all - conlaboraodres
+    
+   
+	
+	var cachedQuery, lastSearch, pendingSearch, cancelSearch = angular.noop;
+		
+    /*for(i=0; i< colaboradores.length; i++){
+        colaboradores[i].iconoAvatar = '../images/'+colaboradores[i].iconoAvatar+'.png';   
+    }*/
+    
+   
+    
+	$scope.filterSelected = false;
+	
+	$scope.querySearch = function(criteria){
+		cachedQuery = criteria;
+      return cachedQuery ? $scope.allContacts.filter(createFilterFor(cachedQuery)) : [];
+	}
+	function createFilterFor(query) {
+      var lowercaseQuery = angular.lowercase(query);
+
+      return function filterFn(contact) {
+        return (contact.username.toLowerCase().indexOf(lowercaseQuery) != -1);
+      };
+
+    }
+
+ 	
+	
+	$scope.saveCollaborators = function(){
+		
+		proyecto = angular.copy($scope.project);
+		usuariosTotales = $scope.users;
+		proyecto.colaboradores = angular.copy($scope.contacts);
+		
+	
+	
+		projects.create(proyecto).error(function(error){
+			$scope.error = error;
+			if(!$scope.error.message)
+				if($scope.error.indexOf("duplicate key") != -1)
+					$scope.error =
+						new Object({message:"El nombre del proyecto ya esta registrado, favor de intentar con otro nombre de proyecto."});
+			
+			}).then(function(){
+				for(i=0; i < proyecto.colaboradores.length; i++){
+					
+					if(proyecto.colaboradores[i].proyectos.indexOf(proyecto._id) == -1) 
+						proyecto.colaboradores[i].proyectos.push(proyecto._id);
+					
+					auth.updateUserProjects(proyecto.colaboradores[i])
+						.error(function(error){
+							$scope.error = error;
+							if(!$scope.error.message)
+								if($scope.error.indexOf("duplicate key") != -1)
+									$scope.error =
+										new Object({message:"El nombre de usuario ya esta registrado, favor de intentar con otro nombre de usuario."});
+						}).then(function(){
+							$scope.error =
+								new Object({message:"Los colaboradores fueron agregados exitosamente."});
+						});
+				}
+			});
+	};
+    
+    /////////////////////////////////////////////////
+    
 	$scope.editing = new Boolean();
-	$scope.project = post;
-	
-	
 	$scope.actualFile = "";
 	
 	var refN = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id);
@@ -1047,7 +1193,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
                           for(var i=0;i<x.length;i++){
                               
                               if(x[i].cursor){
-                                  alert("hay alguien aiuddaaaaaa");
+                                  alertify.delay(5000).error("Uno a más colaboradores están un documento de este proyecto.");
                               }
                           }
                           
@@ -1080,8 +1226,8 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
             for(var i=0;i<x.length;i++){
 
                 if(x[i].cursor){
-                alert("hay alguien aiuddaaaaaa");
-                flagf++;
+                    alertify.delay(5000).error("Uno o más colaboradores están editando este documento.");
+                    flagf++;
                 }
             }
 
@@ -1291,8 +1437,6 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 				// Send stream and options to the server
 				ss(socket).emit('compile', stream, {"content" : editor.getValue(), "interpreter" : "C++", "name" : "t1"});
 			} 
-			
-			
 
 			if(containers[i].dataset.exec)
 				{
@@ -1308,134 +1452,15 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 	}
 	}
 
-	
 	$scope.user = auth.currentPayload();
     
-	if($scope.user)
-		$scope.user.colaboradorIndependiente = $scope.user.nombreInstitucion == 'Colaborador Independiente';
     
-	var colaboradores = [];
-	$scope.users = projects.users;
-	
-	if($scope.project){
-		$scope._id = $stateParams.id;
-		$scope.nombre = $scope.project.nombre;
-		$scope.descripcion = $scope.project.descripcion;
-		$scope.icono = $scope.project.icono;
-		$scope.privado = $scope.project.privado + "";
-		$scope.colaboradores =  $scope.project.colaboradores;
-		
-		for(i=0; i< $scope.project.colaboradores.length; i++){
-			for(j=0; j< $scope.users.length; j++){
-				if($scope.project.colaboradores[i]._id == $scope.users[j]._id)
-					colaboradores.push($scope.users[j]);
-			}
-		}
-	}
-	
-	
-	var cachedQuery, lastSearch, pendingSearch, cancelSearch = angular.noop;
-	
-	$scope.loadContacts = function(){
-		return $scope.users;
-		
-		return [
-			{image: 'Avatar1', name: 'jose', email: 'jose@gmail.com'},
-			{image: 'Avatar2', name: 'antonio', email: 'antonio@gmail.com'},
-			{image: 'Avatar3', name: 'juan', email: 'juan@gmail.com'},
-			{image: 'Avatar4', name: 'pedro', email: 'pedro@gmail.com'},
-			{image: 'Avatar5', name: 'miguel', email: 'miguel@gmail.com'},
-			{image: 'Avatar6', name: 'jesus', email: 'jesus@gmail.com'}];
-	}
-	
-	
-	$scope.allContacts = $scope.loadContacts();
-	$scope.contacts = colaboradores;
-	$scope.filterSelected = false;
-	
-	$scope.querySearch = function(criteria){
-		cachedQuery = criteria;
-      return cachedQuery ? $scope.allContacts.filter(createFilterFor(cachedQuery)) : [];
-	}
-	function createFilterFor(query) {
-      var lowercaseQuery = angular.lowercase(query);
-
-      return function filterFn(contact) {
-        return (contact.username.toLowerCase().indexOf(lowercaseQuery) != -1);
-      };
-
-    }
-	
-	$scope.getUsers = function(){
-		projects.getUsers();
-	}
-	
-	
-	$scope.addProject = function(){
-		  if(!$scope.nombre || $scope.nombre === '' ||
-			 !$scope.descripcion ||
-			 !$scope.icono) { 
-				$scope.error =
-					new Object({message:"Por favor llene todos los campos"});
-					return; 
-		  }
-		  project = {
-			nombre: $scope.nombre,
-			descripcion: $scope.descripcion,
-			icono: $scope.icono,
-			privado: $scope.privado,
-			colaboradores: $scope.colaboradores
-		  };
-		  if($scope._id) 
-			  project._id = $scope._id;
-		  else {
-			  project._id = null;
-			  project.colaboradores = [auth.currentId()];
-		  }
-			  
-	  
-		  projects.create(project).error(function(error){
-			$scope.error = error;
-			if(!$scope.error.message)
-				if($scope.error.indexOf("duplicate key") != -1)
-					$scope.error =
-						new Object({message:"El nombre del proyecto ya esta registrado, favor de intentar con otro nombre de proyecto."});
-			
-			}).then(function(){
-				debugger;
-				if(project._id){
-					$state.go('proyectos');
-				}
-				else{
-					var idProyectoActual = projects.projects[projects.projects.length-1]._id;
-					var usuarioLogueado= auth.currentPayload();
-					if(!usuarioLogueado.proyectos)
-						usuarioLogueado.proyectos = [];
-					usuarioLogueado.proyectos.push(idProyectoActual);
-					auth.updateUserProjects(usuarioLogueado)
-							.error(function(error){
-								$scope.error = error;
-								
-							}).then(function(){
-								debugger;
-								$state.go('proyectos');
-								
-							});
-				}
-			});;
-		  $scope.nombre = '';
-		  $scope.descripcion = '';
-		  $scope._id = null;
-	};
-
-
 	$scope.messages = Message.getAll($scope.project._id);
 	
     //Send chat message
 	$scope.send = function(newmessage)
     {
-		
-		
+		$scope.user = auth.currentPayload();
 		
         if(newmessage == undefined||newmessage.text == null)
 		{
