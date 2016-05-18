@@ -615,6 +615,8 @@ function($scope, $state, auth, projects,post){
 			else
 				alert("Ocurrió un error al eliminar el proyecto.");*/
 	  });; 
+        
+        window.location.reload();
 	};
 	
 
