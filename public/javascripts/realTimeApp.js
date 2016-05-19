@@ -292,8 +292,12 @@ app.controller('UsersCtrl', [
 '$http',
 function(users,$scope, $stateParams, projects, $state, auth,Message,$firebaseArray,$http){
 	
-	$scope.allContacts = users.data;
-	
+    $scope.allContacts = [];
+    $scope.user = auth.currentPayload();
+    for(var i=0;i<users.data.length;i++){
+        if(users.data[i]._id != $scope.user._id)
+                $scope.allContacts.push(users.data[i]);    
+    }
 }]);
 
 
@@ -522,7 +526,7 @@ function(post,$scope, $stateParams, projects, $state, auth,Message,$firebaseArra
         console.log($scope.proyect);
 		usuariosTotales = $scope.users;
 		proyecto.colaboradores = angular.copy($scope.contacts);
-		debugger;
+		
 		
 		proyecto.colaboradores.splice(0,0,auth.currentPayload());
 	
@@ -605,7 +609,7 @@ function(post,$scope, $stateParams, projects, $state, auth,Message,$firebaseArra
 								$scope.error = error;
 								
 							}).then(function(){
-								debugger;
+								
 								$state.go('proyectos');
 								
 							});
@@ -669,7 +673,7 @@ function($scope, $state, auth, projects,post){
         for(var j =0; j < $scope.Allprojects[i].colaboradores.length;j++){
             if($scope.Allprojects[i].colaboradores[j] == $scope.user._id)
                 {
-                    console.log('este usuario es colaborador de ',$scope.Allprojects[i]);    
+                    //console.log('este usuario es colaborador de ',$scope.Allprojects[i]);    
                     $scope.projects.push($scope.Allprojects[i]);
                 }
                 
@@ -698,6 +702,33 @@ function($scope, $state, auth, projects,post){
         window.location.reload();
 	};
 	
+    $scope.unasignProjectToUser = function(id, colaboradores){
+	  var proyectos = [];
+	  for(i=0;i<$scope.projects.length;i++){
+		  proyectos.push($scope.projects[i]._id);
+	  }
+	  
+	  projects.unasignProjectToUser(
+	  {
+		  idProyecto: id,
+		  colaboradores: colaboradores,
+		  idUsuario: auth.currentId(),
+		  proyectos: proyectos
+	  }).error(function(error){
+		$scope.error = error;
+		if(!$scope.error.message)
+			$scope.error =
+				new Object({message:"Ocurrió un error al salir del proyecto."});
+			
+		}).then(function(){
+		  
+		  $scope.error =
+				new Object({message:"Se salió del proyecto correctamente."});
+		  $state.go('proyectos');
+	  });; 
+        
+        window.location.reload();
+	};
 
   
 }])
@@ -737,18 +768,25 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
     $scope.project = post;
     $scope.allContacts = [];
     
-      
 	projects.getUsers().success(function(data){
-        //$scope.users
+        
         $scope.users = data;
-        
-        
         var colaboradores = $scope.project.colaboradores;
         $scope.contacts = colaboradores;
         
-        $scope.allContacts = $scope.users;
+        $scope.user = auth.currentPayload();
+        for(var i=0;i<$scope.users.length;i++){
+            if($scope.users[i]._id != $scope.user._id)
+                    $scope.allContacts.push($scope.users[i]);    
+        }
         
+       for(var j=0;j<colaboradores.length;j++){
+            for(var k=0;k<$scope.allContacts.length;k++)
+               if($scope.allContacts[k]._id == colaboradores[j]._id){
         
+                   $scope.allContacts.splice(k,1);
+               }
+       }
         
     });
     
@@ -835,10 +873,11 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
 									$scope.error =
 										new Object({message:"El nombre de usuario ya esta registrado, favor de intentar con otro nombre de usuario."});
 						}).then(function(){
-							$scope.error =
-								new Object({message:"Los colaboradores fueron agregados exitosamente."});
+							
 						});
 				}
+            
+                alertify.delay(3000).success("Los colaboradores se actualizaron correctamente.");
 			});
 	};
     
@@ -1833,6 +1872,21 @@ app.factory('projects', ['$http', 'auth', function($http, auth){
 	  return $http.get('/projects/' + id).then(function(res){
 		  o.project = res.data;
 			return res.data;
+	  });
+	};
+    
+    o.unasignProjectToUser = function(project){
+	  return $http.post('/unasignProjectToUser', project).success(function(data){
+		console.log(data);
+		var id=project.idProyecto;
+		var index;
+			for(i=0; i<o.projects.length; i++){
+				if(o.projects[i]._id == id){
+					index = i;
+					break;
+				}
+			};
+			o.projects.splice(index, 1);
 	  });
 	};
   
