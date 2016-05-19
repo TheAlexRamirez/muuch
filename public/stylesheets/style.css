@@ -1,3 +1,8 @@
+@font-face {
+    font-family: mayan;
+    src: url(../fonts/mayan.ttf);
+}
+
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -177,3 +182,76 @@ a.powered-by-firepad {
 	display:inline-block;
 	overflow: scroll;
 }
+
+HTML
+CSS
+JavaScript
+.homepage-hero-module {
+    border-right: none;
+    border-left: none;
+    position: absolute;
+}
+.no-video .video-container video,
+.touch .video-container video {
+    display: none;
+}
+.no-video .video-container .poster,
+.touch .video-container .poster {
+    display: block !important;
+}
+.video-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+	top: 0;
+    height: 100%;
+    width: 100%;
+	
+    overflow: hidden;
+    background: #000;
+}
+.video-container .poster img {
+    width: 100%;
+    bottom: 0;
+    position: absolute;
+}
+.video-container .filter {
+    z-index: 100;
+    position: absolute;
+	overflow: hidden;
+    background: rgba(0, 0, 0, 0.4);
+    width: 100%;
+}
+.video-container video {
+    position: absolute;
+	overflow: hidden;
+    z-index: 0;
+    bottom: 0;
+}
+.video-container video.fillWidth {
+    width: 100%;
+	overflow: hidden;
+}
+
+.title-container{
+	
+	    z-index: 1000;
+    position: absolute;
+    top: 35%;
+    width: 100%;
+	
+    text-align: center;
+    color: #fff;
+	
+}
+.title-container h1{
+	font-family: mayan;
+	font-size: 200px;
+}
+
+.title-container p{
+	font-family: serif;
+	font-size: 30px;
+}
+
+
