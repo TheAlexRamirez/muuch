@@ -844,7 +844,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
     
     /////////////////////////////////////////////////
     
-	$scope.editing = new Boolean();
+	$scope.editing = null;
 	$scope.actualFile = "";
 	
 	var refN = new Firebase('https://muchwakun.firebaseio.com/'+$stateParams.id);
@@ -1312,7 +1312,7 @@ function(post, $scope, $stateParams, projects, $state, auth,Message,$firebaseArr
                 }
             }
 
-            if(flag!=0)
+            if(flagf!=0)
             {
                 $scope.editing = true;
                 console.log("edirting");
